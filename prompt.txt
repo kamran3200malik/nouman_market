@@ -1,0 +1,1937 @@
+Absolutely. Below is a **complete project-generation prompt** you can give to Claude, Cursor, Lovable, or another AI coding assistant to build a professional **Laravel + Vue.js beauty salon marketplace/platform**.
+
+# Beauty Salon & Makeup Artist Marketplace — Laravel + Vue.js
+
+Build a complete, modern, responsive **Beauty Salon & Makeup Artist Marketplace** using:
+
+* **Backend:** Laravel 12+
+* **Frontend:** Vue 3
+* **SPA:** Inertia.js
+* **Database:** MySQL
+* **Authentication:** Laravel Breeze/Sanctum as appropriate
+* **Styling:** Tailwind CSS
+* **Icons:** Lucide Icons
+* **Permissions:** Spatie Laravel Permission
+* **File Storage:** Laravel Storage
+* **Queues/Notifications:** Laravel Queues + Notifications
+* **Architecture:** Clean, modular, scalable Laravel architecture
+
+The application should be production-ready, responsive, secure, easy to maintain, and have a polished modern beauty/salon UI.
+
+---
+
+# 1. Project Concept
+
+Create a platform where customers can discover and book:
+
+* Makeup artists
+* Beauty salons
+* Hair stylists
+* Nail artists
+* Hairstylists
+* Facial/skincare specialists
+* Bridal makeup artists
+* Mehndi artists
+* Lash artists
+* Brow artists
+* Other beauty professionals
+
+Each professional can create their own profile/page after registering and being approved by an administrator.
+
+Customers can:
+
+1. Browse beauty professionals.
+2. Search and filter them.
+3. Open an artist/salon profile.
+4. View their services.
+5. View prices.
+6. View portfolio/gallery.
+7. Check availability.
+8. Select a service.
+9. Book an appointment.
+10. Pay if online payment is enabled.
+11. Receive booking confirmation.
+12. Review the artist after the appointment.
+
+---
+
+# 2. User Roles
+
+Implement a proper role/permission system.
+
+## Admin
+
+Admin can:
+
+* Login to admin dashboard.
+* Manage all users.
+* Manage makeup artists.
+* Approve/reject artist registrations.
+* Suspend/activate artists.
+* Manage customers.
+* Manage services.
+* Manage categories.
+* Manage locations.
+* Manage bookings.
+* Manage payments.
+* Manage reviews.
+* Manage homepage content.
+* Manage banners.
+* Manage featured artists.
+* Manage promotional offers.
+* Manage commissions.
+* Manage platform settings.
+* View reports.
+* Manage notifications.
+* Manage CMS pages.
+* Manage permissions and roles.
+
+## Makeup Artist / Beauty Professional
+
+Artists must register and wait for admin approval.
+
+After approval, they can:
+
+* Create/manage their profile.
+* Upload profile image.
+* Add bio/about information.
+* Add business/salon name.
+* Add address/location.
+* Add contact information.
+* Add working hours.
+* Add services.
+* Set service prices.
+* Set service duration.
+* Add portfolio images.
+* Add videos if supported.
+* Manage availability.
+* Manage holidays/unavailable dates.
+* Receive bookings.
+* Accept/reject bookings.
+* View upcoming appointments.
+* View completed appointments.
+* View customers.
+* Manage reviews.
+* Create discounts/offers.
+* View earnings.
+* View booking statistics.
+* Manage account settings.
+
+## Customer
+
+Customers can:
+
+* Register/login.
+* Create profile.
+* Search artists.
+* Search salons.
+* Filter services.
+* View artist pages.
+* View portfolios.
+* View reviews.
+* Check availability.
+* Book appointments.
+* Cancel/reschedule bookings.
+* View booking history.
+* Receive notifications.
+* Leave reviews.
+* Save/favorite artists.
+* Manage profile.
+
+---
+
+# 3. Artist Registration & Approval Flow
+
+Create a professional registration flow.
+
+### Step 1 — Basic Information
+
+Fields:
+
+* First name
+* Last name
+* Email
+* Phone
+* Password
+* Confirm password
+
+### Step 2 — Professional Information
+
+Fields:
+
+* Business/salon name
+* Professional type
+* Years of experience
+* Short bio
+* Full description
+* Specializations
+
+Professional types:
+
+* Makeup Artist
+* Bridal Makeup Artist
+* Hair Stylist
+* Nail Artist
+* Facial Specialist
+* Mehndi Artist
+* Lash Artist
+* Brow Artist
+* Beauty Salon
+* Spa
+* Other
+
+### Step 3 — Location
+
+Fields:
+
+* Country
+* City
+* Area
+* Address
+* Latitude
+* Longitude
+
+Allow the artist to select their location on a map if possible.
+
+### Step 4 — Documents
+
+Allow upload of:
+
+* CNIC/ID
+* Professional certificate
+* Business registration document
+* Other verification documents
+
+These documents should only be visible to authorized admins.
+
+### Step 5 — Portfolio
+
+Artist can upload:
+
+* Profile image
+* Cover image
+* Portfolio images
+
+### Step 6 — Submit Application
+
+After submission:
+
+`Pending Approval`
+
+Admin receives notification.
+
+Admin can:
+
+* Approve
+* Reject
+* Request changes
+* Suspend
+
+Artist receives notification about the decision.
+
+Only approved artists should be publicly visible.
+
+---
+
+# 4. Artist Public Page
+
+Every approved artist should automatically get a unique public profile URL.
+
+Example:
+
+`/artists/sarah-makeup-studio`
+
+or:
+
+`/artist/sarah-khan`
+
+The page should look like a professional beauty business profile.
+
+Include:
+
+## Header
+
+* Cover image
+* Profile image
+* Artist/business name
+* Verified badge
+* Rating
+* Number of reviews
+* Location
+* Years of experience
+* Follow/Favorite button
+* Share button
+* Book Now button
+
+## About
+
+Show:
+
+* Biography
+* Experience
+* Specializations
+* Languages
+* Working areas
+
+## Services
+
+Display service cards containing:
+
+* Service image
+* Service name
+* Description
+* Duration
+* Price
+* Discount
+* Book button
+
+Example:
+
+**Bridal Makeup**
+
+PKR 25,000
+
+Duration: 3 hours
+
+Book Now
+
+## Portfolio
+
+Beautiful gallery with:
+
+* Makeup images
+* Before/after images
+* Hair styling
+* Bridal looks
+* Nail designs
+* Other work
+
+Allow image lightbox.
+
+## Reviews
+
+Display:
+
+* Average rating
+* Rating breakdown
+* Customer reviews
+* Customer name
+* Customer image
+* Review date
+
+## Availability
+
+Show available dates and time slots.
+
+## Location
+
+Display:
+
+* Address
+* Map
+* Service area
+
+## Contact
+
+Buttons:
+
+* Call
+* WhatsApp
+* Message
+* Book Appointment
+
+---
+
+# 5. Home Page
+
+Create a premium beauty-focused homepage.
+
+Sections:
+
+### Hero
+
+Large beautiful beauty/salon visual.
+
+Headline:
+
+**Find Your Perfect Beauty Professional**
+
+Subheading:
+
+Discover trusted makeup artists, salons and beauty professionals near you.
+
+Search:
+
+`What service are you looking for?`
+
+`Where?`
+
+Button:
+
+**Search**
+
+### Popular Services
+
+Cards:
+
+* Bridal Makeup
+* Party Makeup
+* Hair Styling
+* Nails
+* Facial
+* Mehndi
+* Lashes
+* Brows
+
+### Featured Artists
+
+Show approved and featured professionals.
+
+Card should contain:
+
+* Image
+* Name
+* Specialty
+* Location
+* Rating
+* Starting price
+* Book button
+
+### Popular Salons
+
+Show salon cards.
+
+### Bridal Makeup
+
+Dedicated promotional section for bridal services.
+
+### How It Works
+
+3 or 4 steps:
+
+1. Search
+2. Choose Artist
+3. Book
+4. Get Ready
+
+### Customer Reviews
+
+Testimonials.
+
+### Special Offers
+
+Show active promotions.
+
+### Become a Professional
+
+CTA:
+
+**Are you a beauty professional? Join our platform.**
+
+Button:
+
+`Register as an Artist`
+
+---
+
+# 6. Search & Discovery
+
+Create a powerful artist discovery page.
+
+URL:
+
+`/artists`
+
+Filters:
+
+* Service
+* Category
+* City
+* Area
+* Price range
+* Rating
+* Experience
+* Availability
+* Professional type
+* Verified only
+* At-home service
+* Salon service
+* Bridal specialist
+
+Sorting:
+
+* Recommended
+* Highest rated
+* Most reviewed
+* Price low to high
+* Price high to low
+* Newest
+* Nearest
+
+Use AJAX/Inertia filtering without unnecessary full page reloads.
+
+---
+
+# 7. Service Categories
+
+Create hierarchical categories.
+
+Example:
+
+Beauty
+
+* Makeup
+
+  * Bridal Makeup
+  * Party Makeup
+  * Engagement Makeup
+  * HD Makeup
+  * Airbrush Makeup
+* Hair
+
+  * Hair Styling
+  * Hair Cutting
+  * Hair Coloring
+  * Bridal Hair
+* Nails
+
+  * Manicure
+  * Pedicure
+  * Nail Art
+* Skin
+
+  * Facial
+  * Cleanup
+  * Skin Treatment
+* Mehndi
+
+  * Bridal Mehndi
+  * Arabic Mehndi
+  * Simple Mehndi
+* Lashes
+* Brows
+
+Admin should be able to create/edit/delete categories dynamically.
+
+---
+
+# 8. Service Management
+
+Artists can create services.
+
+Fields:
+
+* Category
+* Service name
+* Description
+* Price
+* Discount price
+* Duration
+* Image
+* Active/inactive
+* Home service available
+* Salon service available
+* Booking required
+* Advance payment required
+
+Example:
+
+```text
+Bridal Makeup
+Regular Price: PKR 30,000
+Discount Price: PKR 25,000
+Duration: 3 hours
+Home Service: Yes
+Salon Service: Yes
+```
+
+---
+
+# 9. Booking System
+
+Create a complete appointment booking system.
+
+Flow:
+
+```text
+Customer
+   ↓
+Artist Page
+   ↓
+Select Service
+   ↓
+Select Date
+   ↓
+Select Time
+   ↓
+Enter Customer Details
+   ↓
+Confirm Booking
+   ↓
+Payment
+   ↓
+Booking Confirmation
+```
+
+Booking statuses:
+
+* Pending
+* Confirmed
+* Rejected
+* Cancelled
+* Rescheduled
+* Completed
+* No Show
+
+Artists should not be able to receive overlapping bookings.
+
+Prevent double booking at database/business-logic level.
+
+---
+
+# 10. Availability Management
+
+Artists should be able to configure:
+
+### Weekly Schedule
+
+Example:
+
+Monday:
+
+09:00 AM → 06:00 PM
+
+Tuesday:
+
+09:00 AM → 06:00 PM
+
+etc.
+
+Allow multiple slots per day.
+
+Example:
+
+09:00–13:00
+
+15:00–20:00
+
+### Holidays
+
+Artist can mark dates unavailable.
+
+### Custom Availability
+
+Artist can override normal working hours for specific dates.
+
+The booking system must calculate available slots dynamically.
+
+---
+
+# 11. At-Home Services
+
+Support home service bookings.
+
+When an artist supports home services:
+
+Customer can choose:
+
+* Salon
+* Customer's Home
+
+For home service:
+
+Ask for:
+
+* Address
+* Area
+* Location
+* Additional notes
+
+Artist can define:
+
+* Home service fee
+* Maximum service distance
+* Areas served
+
+---
+
+# 12. Favorites
+
+Customers can favorite artists.
+
+Create:
+
+`My Favorites`
+
+Display saved artists.
+
+---
+
+# 13. Reviews & Ratings
+
+After a completed appointment, customer can leave a review.
+
+Rating:
+
+1–5 stars.
+
+Fields:
+
+* Rating
+* Review
+* Optional images
+
+Admin can moderate reviews.
+
+Artist cannot review themselves.
+
+Only customers with completed bookings should be allowed to review that service/artist.
+
+---
+
+# 14. Notifications
+
+Implement notifications for:
+
+### Artist
+
+* Registration received
+* Account approved
+* Account rejected
+* New booking
+* Booking cancelled
+* Booking rescheduled
+* New review
+* Payment received
+
+### Customer
+
+* Booking created
+* Booking confirmed
+* Booking rejected
+* Booking cancelled
+* Appointment reminder
+* Payment confirmation
+* Artist message
+* Review reminder
+
+Support:
+
+* In-app notifications
+* Email notifications
+
+Structure the notification system so SMS/WhatsApp can be added later.
+
+---
+
+# 15. Messaging
+
+Create optional customer ↔ artist messaging.
+
+Features:
+
+* Conversation list
+* Chat messages
+* Read/unread status
+* Message timestamps
+* Booking reference
+* Basic real-time messaging if practical
+
+Prevent users from accessing conversations they don't belong to.
+
+---
+
+# 16. Promotions & Discounts
+
+Artists can create offers.
+
+Example:
+
+**Bridal Package — 20% OFF**
+
+Fields:
+
+* Offer name
+* Description
+* Discount type
+* Discount value
+* Start date
+* End date
+* Applicable services
+* Maximum usage
+* Active/inactive
+
+Admin can also create platform-wide promotions.
+
+---
+
+# 17. Packages
+
+Allow artists to create packages.
+
+Example:
+
+### Bridal Package
+
+Includes:
+
+* Bridal Makeup
+* Hair Styling
+* Lashes
+* Nails
+
+Regular:
+
+PKR 40,000
+
+Package:
+
+PKR 32,000
+
+Customers can book the entire package.
+
+---
+
+# 18. Admin Dashboard
+
+Create a modern responsive admin dashboard.
+
+Dashboard statistics:
+
+* Total customers
+* Total artists
+* Pending artist approvals
+* Active artists
+* Total bookings
+* Pending bookings
+* Completed bookings
+* Cancelled bookings
+* Total revenue
+* Platform commission
+* New registrations
+* New reviews
+
+Charts:
+
+* Bookings over time
+* Revenue over time
+* Most popular services
+* Top artists
+* Customer growth
+
+---
+
+# 19. Admin Artist Management
+
+Table columns:
+
+* Artist
+* Business
+* Category
+* Location
+* Rating
+* Bookings
+* Status
+* Registration date
+* Actions
+
+Actions:
+
+* View
+* Approve
+* Reject
+* Suspend
+* Activate
+* Edit
+* Delete
+
+Add search, filtering, sorting and pagination.
+
+---
+
+# 20. Admin Approval Screen
+
+Create a dedicated approval interface.
+
+Show:
+
+* Artist information
+* Documents
+* Profile
+* Portfolio
+* Services
+* Location
+* Contact information
+
+Actions:
+
+**Approve**
+
+**Reject**
+
+**Request Changes**
+
+When rejecting, admin should provide a reason.
+
+---
+
+# 21. Customer Dashboard
+
+Create:
+
+### Dashboard
+
+* Upcoming booking
+* Recent bookings
+* Favorite artists
+* Recommended artists
+
+### My Bookings
+
+Tabs:
+
+* Upcoming
+* Completed
+* Cancelled
+
+### Favorites
+
+Saved artists.
+
+### Reviews
+
+Reviews submitted by customer.
+
+### Profile
+
+Manage:
+
+* Name
+* Email
+* Phone
+* Profile picture
+* Address
+
+### Notifications
+
+Notification center.
+
+---
+
+# 22. Artist Dashboard
+
+Create a separate professional dashboard.
+
+Dashboard cards:
+
+* Today's bookings
+* Upcoming bookings
+* Total bookings
+* Revenue
+* Rating
+* Profile views
+
+Sections:
+
+### Calendar
+
+Calendar showing bookings.
+
+### Bookings
+
+Manage all appointments.
+
+### Services
+
+Create/edit/delete services.
+
+### Portfolio
+
+Upload/manage images.
+
+### Availability
+
+Manage working hours.
+
+### Reviews
+
+View reviews.
+
+### Offers
+
+Manage promotions.
+
+### Earnings
+
+Show:
+
+* Gross earnings
+* Platform commission
+* Net earnings
+* Pending payments
+* Completed payments
+
+### Profile
+
+Manage public profile.
+
+---
+
+# 23. Payments
+
+Design the system to support payment gateways.
+
+Payment structure should support:
+
+* Cash
+* Bank transfer
+* Online payment
+* Partial/advance payment
+
+Create a flexible payment abstraction so gateways can be added later.
+
+For Pakistan, keep the architecture ready for gateways such as:
+
+* JazzCash
+* Easypaisa
+* Stripe where available
+* Bank transfer
+
+Do not hard-code payment gateway logic into booking controllers.
+
+---
+
+# 24. Commission System
+
+Platform can charge artists commission.
+
+Example:
+
+Booking:
+
+PKR 20,000
+
+Platform commission:
+
+10%
+
+Platform:
+
+PKR 2,000
+
+Artist:
+
+PKR 18,000
+
+Admin should be able to configure:
+
+* Global commission
+* Artist-specific commission
+* Category-specific commission
+
+---
+
+# 25. Location Features
+
+Implement location-aware search.
+
+Artist profile should have:
+
+* Address
+* City
+* Area
+* Coordinates
+
+Allow customers to search:
+
+**Beauty professionals near me**
+
+Show approximate distance where possible.
+
+Do not expose unnecessary private location information.
+
+---
+
+# 26. SEO
+
+Each public artist page should have:
+
+* SEO title
+* Meta description
+* Canonical URL
+* Open Graph image
+* SEO-friendly slug
+
+Example:
+
+`/artists/sarah-bridal-makeup`
+
+Also create SEO-friendly pages for:
+
+* Services
+* Categories
+* Cities
+* Salons
+* Artists
+
+Generate sitemap support.
+
+---
+
+# 27. Responsive Design
+
+The entire application must be fully responsive.
+
+Support:
+
+* Desktop
+* Laptop
+* Tablet
+* Mobile
+
+Mobile navigation should be redesigned specifically for small screens.
+
+Customer mobile experience should prioritize:
+
+* Search
+* Categories
+* Artists
+* Bookings
+* Favorites
+* Profile
+
+Artist dashboard should also work properly on mobile.
+
+Admin dashboard should be responsive but optimized primarily for desktop.
+
+---
+
+# 28. UI/UX Direction
+
+Use a premium beauty-industry design.
+
+Design principles:
+
+* Elegant
+* Minimal
+* Modern
+* Clean
+* Spacious
+* Professional
+* Mobile-first
+
+Avoid:
+
+* Excessive gradients
+* Overloaded dashboards
+* Huge unnecessary cards
+* Too many colors
+* Excessive animations
+* Cluttered tables
+
+Use:
+
+* Beautiful typography
+* Rounded cards
+* High-quality imagery
+* Subtle shadows
+* Consistent spacing
+* Clear hierarchy
+* Elegant buttons
+* Modern forms
+* Proper empty states
+* Skeleton loaders
+* Toast notifications
+* Confirmation dialogs
+
+The design should feel like a combination of a premium beauty marketplace and modern SaaS application.
+
+---
+
+# 29. Database Design
+
+Create proper migrations and relationships.
+
+Suggested tables:
+
+```text
+users
+roles
+permissions
+
+artist_profiles
+artist_documents
+artist_categories
+
+categories
+services
+service_images
+
+artist_portfolios
+
+locations
+cities
+areas
+
+artist_availabilities
+artist_holidays
+artist_custom_availabilities
+
+bookings
+booking_items
+booking_status_history
+
+payments
+
+favorites
+
+reviews
+review_images
+
+offers
+offer_services
+
+packages
+package_services
+
+conversations
+messages
+
+notifications
+
+commissions
+
+payouts
+
+banners
+pages
+settings
+```
+
+Use proper foreign keys, indexes, unique constraints and soft deletes where appropriate.
+
+---
+
+# 30. Important Relationships
+
+Examples:
+
+```text
+User
+ └── ArtistProfile
+
+ArtistProfile
+ ├── Services
+ ├── Portfolio
+ ├── Reviews
+ ├── Bookings
+ ├── Availability
+ ├── Offers
+ └── Packages
+
+Service
+ ├── Category
+ └── Artist
+
+Booking
+ ├── Customer
+ ├── Artist
+ ├── Service
+ └── Payment
+
+Review
+ ├── Customer
+ ├── Artist
+ └── Booking
+```
+
+Use Eloquent relationships properly.
+
+Avoid N+1 queries.
+
+Use eager loading where appropriate.
+
+---
+
+# 31. Security
+
+Implement:
+
+* Laravel authentication
+* Authorization policies
+* Role/permission checks
+* Form Request validation
+* CSRF protection
+* Rate limiting
+* Secure file uploads
+* MIME validation
+* File size validation
+* Private document storage
+* Secure authorization for uploaded files
+* SQL injection protection through Eloquent/query builder
+* XSS protection
+* Booking ownership validation
+
+Artists must never access another artist's private dashboard data.
+
+Customers must only access their own bookings.
+
+Admin-only information must never be exposed through APIs.
+
+---
+
+# 32. API/Architecture
+
+Although the frontend uses Inertia.js, structure the backend cleanly.
+
+Use:
+
+```text
+Controllers
+Services
+Repositories where useful
+Actions where useful
+Form Requests
+Policies
+Resources
+Events
+Listeners
+Jobs
+Notifications
+Enums
+Models
+```
+
+Do not put all business logic inside controllers.
+
+For example:
+
+```text
+BookingService
+ArtistApprovalService
+PaymentService
+AvailabilityService
+CommissionService
+NotificationService
+```
+
+---
+
+# 33. Booking Business Rules
+
+Implement strong validation.
+
+Examples:
+
+* Artist must be approved.
+* Artist must be active.
+* Service must be active.
+* Service must belong to the selected artist.
+* Date must not be in the past.
+* Time must be within artist availability.
+* Time must not overlap another confirmed booking.
+* Artist holidays must be respected.
+* Customer must be authenticated before booking.
+* Cancel/reschedule rules must be configurable.
+* Booking status transitions must be controlled.
+
+Use database transactions for booking creation.
+
+Consider row locking or equivalent protection against race conditions during booking.
+
+---
+
+# 34. Search Performance
+
+Use proper indexes for:
+
+* artist status
+* city
+* category
+* service
+* price
+* rating
+* booking dates
+
+Use pagination everywhere.
+
+Do not load thousands of records at once.
+
+Prepare the architecture so Elasticsearch/Meilisearch/Algolia can be introduced later if required.
+
+---
+
+# 35. Admin CMS
+
+Allow admin to manage:
+
+* Homepage banners
+* Homepage sections
+* About page
+* Contact page
+* Terms & Conditions
+* Privacy Policy
+* FAQ
+* Beauty categories
+* Featured artists
+* Featured services
+
+---
+
+# 36. Analytics
+
+Track useful metrics:
+
+* Artist profile views
+* Service views
+* Booking conversion
+* Bookings
+* Revenue
+* Most searched services
+* Popular locations
+* Popular artists
+
+Show analytics to:
+
+### Admin
+
+Platform-wide analytics.
+
+### Artist
+
+Only their own analytics.
+
+---
+
+# 37. Favorites & Recommendations
+
+Create a recommendation system based on:
+
+* Customer favorites
+* Previously booked services
+* Location
+* Popular artists
+* Ratings
+* Categories
+
+Initially implement simple rule-based recommendations.
+
+Keep architecture open for future AI-based recommendations.
+
+---
+
+# 38. Notifications & Reminders
+
+Implement scheduled appointment reminders.
+
+Example:
+
+24 hours before:
+
+> Your appointment with Sarah Makeup Studio is tomorrow at 4:00 PM.
+
+2 hours before:
+
+> Your beauty appointment starts in 2 hours.
+
+Use Laravel scheduled jobs/queues.
+
+---
+
+# 39. Testing
+
+Create tests for important business logic.
+
+At minimum:
+
+### Authentication
+
+* Customer registration
+* Artist registration
+* Login
+* Password reset
+
+### Artist
+
+* Artist registration
+* Approval
+* Rejection
+* Suspension
+
+### Services
+
+* Create service
+* Update service
+* Delete service
+
+### Booking
+
+* Create booking
+* Prevent past booking
+* Prevent overlapping booking
+* Prevent booking unavailable artist
+* Cancel booking
+* Complete booking
+
+### Reviews
+
+* Customer can review completed booking
+* Customer cannot review incomplete booking
+* Artist cannot review themselves
+
+### Authorization
+
+Verify users cannot access another user's private data.
+
+---
+
+# 40. Seed Data
+
+Create realistic seeders.
+
+Add:
+
+### Admin
+
+```text
+Email: admin@example.com
+Password: password
+```
+
+### Artists
+
+Create at least 10 sample artists.
+
+Different categories:
+
+* Bridal Makeup
+* Hair
+* Nails
+* Facial
+* Mehndi
+* Lashes
+
+### Customers
+
+Create sample customers.
+
+### Services
+
+Create realistic services and prices.
+
+### Reviews
+
+Create realistic ratings and reviews.
+
+### Bookings
+
+Create sample booking history.
+
+Do not use fake sensitive personal information.
+
+---
+
+# 41. File Uploads
+
+Artist should be able to upload:
+
+* Profile picture
+* Cover image
+* Portfolio images
+* Certificates
+* Verification documents
+
+Use Laravel Storage.
+
+Create separate storage areas:
+
+```text
+artists/profile
+artists/covers
+artists/portfolio
+artists/documents
+```
+
+Verification documents must not be publicly accessible.
+
+---
+
+# 42. Dashboard Navigation
+
+## Admin
+
+```text
+Dashboard
+
+Artists
+ ├── All Artists
+ ├── Pending Approval
+ └── Suspended
+
+Customers
+
+Bookings
+
+Services
+ ├── Categories
+ ├── Services
+ └── Packages
+
+Reviews
+
+Payments
+ ├── Transactions
+ ├── Commissions
+ └── Payouts
+
+Promotions
+
+Content
+ ├── Banners
+ ├── Pages
+ └── FAQs
+
+Reports
+
+Notifications
+
+Settings
+
+Users & Permissions
+```
+
+## Artist
+
+```text
+Dashboard
+
+Calendar
+
+Bookings
+
+Services
+
+Packages
+
+Portfolio
+
+Availability
+
+Offers
+
+Reviews
+
+Earnings
+
+Profile
+
+Settings
+```
+
+## Customer
+
+```text
+Dashboard
+
+Explore
+
+My Bookings
+
+Favorites
+
+Messages
+
+Reviews
+
+Notifications
+
+Profile
+```
+
+---
+
+# 43. Important UX States
+
+Every page must handle:
+
+* Loading
+* Empty state
+* Error state
+* Success state
+* Validation errors
+* No search results
+* No bookings
+* No favorites
+* No services
+* Pending approval
+
+Example:
+
+If an artist has no services:
+
+> You haven't added any services yet.
+
+Button:
+
+**Add Your First Service**
+
+---
+
+# 44. Responsive Tables
+
+For mobile:
+
+Do not simply overflow every table horizontally.
+
+Where appropriate, convert tables into:
+
+* Cards
+* Stacked information
+* Mobile action menus
+
+Desktop can use tables.
+
+---
+
+# 45. Reusable Vue Components
+
+Create reusable components such as:
+
+```text
+AppButton
+AppInput
+AppSelect
+AppModal
+AppDropdown
+AppTable
+AppPagination
+AppBadge
+AppAlert
+AppToast
+
+ArtistCard
+ServiceCard
+ReviewCard
+BookingCard
+PortfolioGallery
+RatingStars
+AvailabilityCalendar
+BookingForm
+SearchFilters
+```
+
+Avoid duplicating UI code.
+
+---
+
+# 46. Laravel Code Quality
+
+Follow Laravel best practices.
+
+Requirements:
+
+* PSR-12
+* Type declarations
+* Proper validation
+* Proper authorization
+* Thin controllers
+* Reusable services
+* Eloquent relationships
+* Enums for statuses
+* Database transactions
+* Queued notifications
+* Events/listeners where useful
+* Clean naming conventions
+
+Do not create unnecessary abstractions.
+
+Keep the implementation understandable for another Laravel developer.
+
+---
+
+# 47. Vue Code Quality
+
+Use Vue 3 Composition API.
+
+Prefer:
+
+```text
+<script setup>
+```
+
+Use reusable composables where appropriate.
+
+Examples:
+
+```text
+useBooking()
+usePagination()
+useFilters()
+useNotifications()
+useModal()
+```
+
+Keep components small and focused.
+
+---
+
+# 48. Final Product Flow
+
+The complete customer flow should be:
+
+```text
+Homepage
+   ↓
+Search
+   ↓
+Choose Category
+   ↓
+View Artists
+   ↓
+Filter
+   ↓
+Artist Profile
+   ↓
+View Services
+   ↓
+Select Service
+   ↓
+Select Date
+   ↓
+Select Time
+   ↓
+Choose Salon/Home Service
+   ↓
+Enter Details
+   ↓
+Confirm Booking
+   ↓
+Payment
+   ↓
+Booking Confirmation
+   ↓
+Appointment
+   ↓
+Complete
+   ↓
+Review
+```
+
+Artist flow:
+
+```text
+Register
+   ↓
+Complete Profile
+   ↓
+Upload Documents
+   ↓
+Submit Application
+   ↓
+Admin Review
+   ↓
+Approved
+   ↓
+Create Services
+   ↓
+Add Portfolio
+   ↓
+Set Availability
+   ↓
+Receive Booking
+   ↓
+Accept Booking
+   ↓
+Complete Appointment
+   ↓
+Receive Review
+   ↓
+Receive Earnings
+```
+
+Admin flow:
+
+```text
+Admin Login
+   ↓
+Dashboard
+   ↓
+Review Artist Applications
+   ↓
+Approve Artist
+   ↓
+Manage Platform
+   ↓
+Monitor Bookings
+   ↓
+Manage Payments
+   ↓
+Manage Reviews
+   ↓
+Reports & Analytics
+```
+
+---
+
+# 49. Development Requirements
+
+Build this project incrementally.
+
+First create:
+
+1. Laravel project setup
+2. Vue + Inertia setup
+3. Authentication
+4. Roles and permissions
+5. Database architecture
+6. Admin dashboard
+7. Artist registration
+8. Artist approval
+9. Artist dashboard
+10. Public artist profiles
+11. Services
+12. Search/filter
+13. Availability
+14. Booking system
+15. Customer dashboard
+16. Reviews
+17. Payments
+18. Notifications
+19. Messaging
+20. Promotions
+21. Analytics
+22. SEO
+23. Testing
+24. Final responsive UI polish
+
+Do not try to put the entire application into one giant controller or component.
+
+---
+
+# 50. Most Important Requirement
+
+The application should **not feel like a generic CRUD admin panel**.
+
+It should feel like a real commercial beauty marketplace where:
+
+* Customers can easily discover professionals.
+* Artists can professionally showcase their work.
+* Booking is simple.
+* Admin has complete control.
+* The UI looks premium.
+* Mobile experience is excellent.
+* The architecture can support thousands of artists and customers.
+
+Before implementing each feature, think about:
+
+**"How would a real beauty salon customer use this?"**
+
+and
+
+**"How would a real makeup artist manage their business using this platform?"**
+
+Build the application with those two perspectives in mind.
+
+Start by designing the **database architecture, user roles, application flow, and folder structure**, then implement the project module by module. Do not skip validation, authorization, responsive design, loading states, empty states, error handling, and security.
+
+This prompt is intentionally broad enough to create a **full salon marketplace**, rather than just a salon booking website. It also leaves room to later add **multiple salons, home services, online payments, commissions, subscriptions, packages, and mobile apps** without redesigning the core architecture.

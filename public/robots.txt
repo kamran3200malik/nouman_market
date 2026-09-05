@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /artist/
+Disallow: /customer/
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register
+
+Sitemap: http://127.0.0.1:8000/sitemap.xml

@@ -1,0 +1,210 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --color-ink: 20 20 22;
+        --color-cream: 250 247 242;
+        --color-rose: 190 24 93;
+        --color-champagne: 197 160 89;
+        --color-gold: 212 175 55;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply min-h-screen text-slate-800 antialiased font-sans bg-gradient-to-b from-[#FFF5F7] via-[#FFF1F2] to-[#FDF2F4];
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-sans font-bold tracking-tight;
+    }
+
+    ::selection {
+        background: rgba(225, 29, 72, 0.25);
+        color: #881337;
+    }
+
+    /* Custom luxury pink scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #FFE4E6;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #FB7185;
+        border-radius: 9999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #E11D48;
+    }
+}
+
+@layer components {
+    .page-shell {
+        @apply relative overflow-hidden;
+    }
+
+    .page-shell::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(circle at 10% 20%, rgba(244, 114, 182, 0.16), transparent 32%),
+            radial-gradient(circle at 90% 15%, rgba(251, 113, 133, 0.15), transparent 30%),
+            radial-gradient(circle at 50% 85%, rgba(236, 72, 153, 0.14), transparent 35%);
+        z-index: -1;
+    }
+
+    .glass-luxury {
+        @apply border border-white/80 bg-white/80 backdrop-blur-2xl;
+        box-shadow: 0 20px 50px rgba(28, 28, 32, 0.06);
+    }
+
+    .glass-luxury-dark {
+        @apply border border-white/10 bg-onyx-900/85 backdrop-blur-2xl text-white;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .glass-panel {
+        @apply border border-white/70 bg-white/75 backdrop-blur-xl;
+        box-shadow: 0 15px 40px rgba(72, 51, 25, 0.06);
+    }
+
+    .hero-panel {
+        @apply border border-amber-100/60 backdrop-blur-2xl;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(253, 242, 244, 0.85));
+        box-shadow: 0 30px 90px rgba(190, 24, 93, 0.10);
+    }
+
+    .section-kicker {
+        @apply inline-flex items-center gap-2 rounded-full border border-glam-200/80 bg-glam-50/90 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-glam-700 shadow-sm;
+    }
+
+    .section-kicker-gold {
+        @apply inline-flex items-center gap-2 rounded-full border border-champagne-300/80 bg-champagne-50/90 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-champagne-800 shadow-sm;
+    }
+
+    .section-heading {
+        @apply font-sans text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl tracking-tight;
+    }
+
+    .section-copy {
+        @apply font-sans text-base leading-relaxed text-slate-600 sm:text-lg;
+    }
+
+    .market-card {
+        @apply rounded-[2rem] border border-white/80 bg-white/85 transition-all duration-300;
+        box-shadow: 0 15px 45px rgba(28, 28, 32, 0.05);
+    }
+
+    .market-card-hover {
+        @apply hover:-translate-y-1.5 hover:border-glam-200/70;
+    }
+    .market-card-hover:hover {
+        box-shadow: 0 25px 65px rgba(190, 24, 93, 0.12);
+    }
+
+    .gold-gradient {
+        background: linear-gradient(135deg, #D4AF37 0%, #C5A059 50%, #876530 100%);
+    }
+
+    .accent-gradient {
+        background: linear-gradient(135deg, #BE185D 0%, #E07A5F 45%, #C5A059 100%);
+    }
+
+    .editorial-gradient {
+        background: linear-gradient(135deg, #141416 0%, #2A2528 50%, #141416 100%);
+    }
+
+    .rose-glow {
+        box-shadow: 0 0 35px -5px rgba(190, 24, 93, 0.25);
+    }
+
+    .gold-glow {
+        box-shadow: 0 0 35px -5px rgba(212, 175, 55, 0.28);
+    }
+
+    .badge-pill {
+        @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide transition;
+    }
+
+    .marquee-window {
+        @apply overflow-hidden;
+        mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+        -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    }
+
+    .marquee-track {
+        @apply flex w-max items-stretch gap-4;
+        animation: marquee-left 36s linear infinite;
+    }
+
+    .hero-fade-enter-active,
+    .hero-fade-leave-active {
+        transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .hero-fade-enter-from,
+    .hero-fade-leave-to {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+}
+
+@keyframes marquee-left {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* DataTable Customization */
+.customize-table {
+    --vue3-easy-data-table-header-font-size: 0.875rem;
+    --vue3-easy-data-table-header-font-weight: 600;
+    --vue3-easy-data-table-header-text-color: #6b7280;
+    --vue3-easy-data-table-header-background-color: #f9fafb;
+    --vue3-easy-data-table-body-font-size: 0.875rem;
+    --vue3-easy-data-table-body-text-color: #111827;
+    --vue3-easy-data-table-body-row-hover-background-color: #fef2f2;
+    --vue3-easy-data-table-border-color: #e5e7eb;
+    --vue3-easy-data-table-font-family: inherit;
+}
+
+.customize-table .vue3-easy-data-table__main {
+    border-radius: 0.5rem;
+}
+
+.customize-table .vue3-easy-data-table__header th {
+    padding: 0.75rem 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.customize-table .vue3-easy-data-table__body td {
+    padding: 1rem;
+}
+
+/* Banner Modal offset for sidebar */
+@media (min-width: 640px) {
+    .banner-modal .transform {
+        margin-left: 18rem;
+    }
+}
