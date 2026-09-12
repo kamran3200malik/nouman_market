@@ -269,7 +269,7 @@ const statusTabs = [
                                 :key="artist.id"
                                 class="hover:bg-slate-50/60 transition-colors"
                             >
-                                <!-- Salon / Store Name -->
+                                <!-- Store / Vendor Name -->
                                 <td class="px-5 py-4">
                                     <div class="font-serif font-bold text-slate-900 text-sm">
                                         {{ artist.seller_store_name || artist.business_name }}

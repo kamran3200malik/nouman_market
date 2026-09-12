@@ -168,7 +168,7 @@ const formatDate = (date) => {
                         Customer Accounts
                     </h1>
                     <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
-                        Manage registered client accounts, monitor appointment frequencies, and control access.
+                        Manage registered client accounts, monitor purchase history, and control access.
                     </p>
                 </div>
 

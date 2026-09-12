@@ -788,7 +788,7 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                                     @change="applyFilters()"
                                     class="w-full sm:w-auto rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs font-medium text-slate-700 focus:border-rose-500 focus:bg-white focus:ring-0 cursor-pointer"
                                 >
-                                    <option value="">All Salon Brands</option>
+                                    <option value="">All Brands</option>
                                     <option v-for="brand in brands" :key="brand" :value="brand">
                                         {{ brand }}
                                     </option>
