@@ -1,0 +1,25 @@
+
+@keyframes marqueeSlideLeft-dd0b967e {
+0% {
+        transform: translate3d(0, 0, 0);
+}
+100% {
+        transform: translate3d(-50%, 0, 0);
+}
+}
+.animate-marquee-left[data-v-dd0b967e] {
+    display: flex;
+    width: -moz-max-content;
+    width: max-content;
+    animation: marqueeSlideLeft-dd0b967e 50s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+}
+.animate-marquee-left[data-v-dd0b967e]:hover {
+    animation-play-state: paused;
+}
+@media (max-width: 640px) {
+.animate-marquee-left[data-v-dd0b967e] {
+        animation-duration: 40s;
+}
+}

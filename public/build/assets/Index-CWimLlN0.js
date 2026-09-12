@@ -1,0 +1,1 @@
+import{D as e,H as t,M as n,x as r}from"./app-B-V1ZHAA.js";import i from"./Pages-LgEnSoRf.js";var a={__name:`Index`,props:{pages:{type:Object,required:!0},stats:{type:Object,default:()=>({total_pages:0,published_pages:0,draft_pages:0,seo_pages:0})},filters:{type:Object,default:()=>({})}},setup(a){let o=a;return(a,s)=>(n(),r(i,t(e(o)),null,16))}};export{a as default};
