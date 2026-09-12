@@ -353,7 +353,7 @@ const formatDate = (dateStr) => {
                     <AppEmptyState
                         icon="💾"
                         title="No database snapshots found"
-                        description="Click 'Create Instant Snapshot' to safeguard all salon, user, booking, and payment records."
+                        description="Click 'Create Instant Snapshot' to safeguard all product catalog, order, user, and financial transaction records."
                     />
                 </div>
             </div>

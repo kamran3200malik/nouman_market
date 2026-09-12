@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import HeroSection from '@/Components/Home/HeroSection.vue';
 
 const props = defineProps({
     banners: {
@@ -43,16 +44,11 @@ const props = defineProps({
 });
 
 const activeTab = ref('trending');
-const activeHeroSlide = ref(0);
-const quickSearch = ref('');
 const notification = ref('');
-
-// Auto-advance hero slides
-setInterval(() => {
-    if (props.banners.length > 1) {
-        activeHeroSlide.value = (activeHeroSlide.value + 1) % props.banners.length;
-    }
-}, 6000);
+const notificationType = ref('success');
+const addingProductId = ref(null);
+const newsletterEmail = ref('');
+const newsletterSubscribed = ref(false);
 
 const currentProducts = computed(() => {
     if (activeTab.value === 'featured') return props.featuredProducts;
@@ -60,14 +56,14 @@ const currentProducts = computed(() => {
     return props.trendingProducts;
 });
 
-const handleSearch = () => {
-    if (quickSearch.value.trim()) {
-        router.get(route('products.index'), { search: quickSearch.value.trim() });
-    }
+const formatPrice = (price) => {
+    if (!price && price !== 0) return 'PKR 0';
+    return 'PKR ' + Number(price).toLocaleString('en-PK');
 };
 
 const addToCart = (product) => {
     try {
+        addingProductId.value = product.id;
         let cart = JSON.parse(localStorage.getItem('beautybook_cart') || '[]');
         const index = cart.findIndex(item => item.id === product.id);
         if (index > -1) {
@@ -78,28 +74,73 @@ const addToCart = (product) => {
                 name: product.name,
                 price: Number(product.price),
                 image: product.image_url,
-                brand: product.brand,
+                brand: product.brand || 'Luxe Beauty',
                 quantity: 1,
             });
         }
         localStorage.setItem('beautybook_cart', JSON.stringify(cart));
         window.dispatchEvent(new Event('cart-updated'));
 
+        notificationType.value = 'success';
         notification.value = `Added "${product.name}" to your shopping bag!`;
+        
+        setTimeout(() => {
+            addingProductId.value = null;
+        }, 400);
+
         setTimeout(() => {
             notification.value = '';
-        }, 3000);
+        }, 3500);
     } catch (e) {
         console.error(e);
+        addingProductId.value = null;
     }
 };
+
+const handleNewsletter = () => {
+    if (newsletterEmail.value && newsletterEmail.value.includes('@')) {
+        newsletterSubscribed.value = true;
+        notificationType.value = 'vip';
+        notification.value = '🎉 Welcome to the Luxe VIP Club! Use code LUXE500 for PKR 500 off.';
+        setTimeout(() => {
+            notification.value = '';
+        }, 5000);
+    }
+};
+
+const trustPerks = [
+    {
+        icon: '💎',
+        title: '100% Genuine Guarantee',
+        desc: 'Direct brand sourcing with authentic batch-code verification.',
+        badge: 'Verified Authentic',
+    },
+    {
+        icon: '🚀',
+        title: 'Free Nationwide Delivery',
+        desc: 'Complimentary shipping across Pakistan on orders over PKR 5,000.',
+        badge: 'Express 24-48H',
+    },
+    {
+        icon: '🛡️',
+        title: 'Cash on Delivery & Cards',
+        desc: 'Pay securely at your doorstep or via 256-bit encrypted card gateway.',
+        badge: 'Buyer Protected',
+    },
+    {
+        icon: '✨',
+        title: '7-Day Hassle-Free Returns',
+        desc: 'Dedicated beauty concierge with seamless returns on unopened items.',
+        badge: 'Satisfaction First',
+    },
+];
 </script>
 
 <template>
     <PublicLayout>
-        <Head title="Luxe Beauty Market - 100% Genuine Cosmetics & Skincare" />
+        <Head title="Luxe Beauty Market - 100% Genuine Cosmetics, Skincare & Fragrances" />
 
-        <!-- Notification Toast -->
+        <!-- Floating Notification Toast -->
         <transition
             enter-active-class="transition duration-300 ease-out"
             enter-from-class="transform translate-y-4 opacity-0"
@@ -110,199 +151,218 @@ const addToCart = (product) => {
         >
             <div
                 v-if="notification"
-                class="fixed bottom-20 right-4 sm:bottom-8 sm:right-8 z-50 flex items-center gap-3 rounded-2xl bg-slate-900/95 text-white px-5 py-3.5 shadow-2xl border border-rose-500/30 backdrop-blur-xl max-w-md text-xs font-semibold"
+                class="fixed bottom-20 right-4 sm:bottom-8 sm:right-8 z-50 flex items-center gap-3.5 rounded-2xl bg-slate-900/95 text-white px-5 py-3.5 shadow-2xl border border-rose-500/30 backdrop-blur-xl max-w-md text-xs font-semibold"
             >
-                <span class="text-base text-emerald-400">✓</span>
-                <span class="flex-1">{{ notification }}</span>
-                <Link :href="route('products.index', { cart: 'open' })" class="text-rose-400 hover:text-rose-300 underline font-bold uppercase tracking-wider text-[10px]">
+                <div class="h-7 w-7 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 text-sm font-bold">
+                    ✓
+                </div>
+                <span class="flex-1 leading-snug">{{ notification }}</span>
+                <Link :href="route('products.index', { cart: 'open' })" class="text-rose-400 hover:text-rose-300 font-bold uppercase tracking-wider text-[11px] underline shrink-0">
                     View Bag
                 </Link>
             </div>
         </transition>
 
         <div class="space-y-16 sm:space-y-24">
-            <!-- 1. HERO SLIDER SECTION -->
+            <!-- 1. HERO SECTION (RESTORED ULTRA-LUXURY BILLBOARD + DUAL SPOTLIGHTS + PRODUCT STRIP) -->
+            <HeroSection
+                :banners="banners"
+                :products="trendingProducts"
+                :categories="categories"
+            />
+
+            <!-- 2. MARKETPLACE TRUST & VALUE PERKS BAR -->
             <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="relative overflow-hidden rounded-3xl lg:rounded-4xl shadow-2xl border border-white/80 bg-slate-900 text-white min-h-[460px] sm:min-h-[520px] flex items-center">
-                    <!-- Banner Slide Item -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                     <div
-                        v-for="(banner, idx) in (banners.length ? banners : [{ title: 'Elevate Your Natural Glow', subtitle: 'Explore 100% authentic international skincare & cosmetics.', tag: 'SPECIAL DEALS', image_url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1600&q=85', button_text: 'Shop Now' }])"
+                        v-for="(perk, idx) in trustPerks"
                         :key="idx"
-                        class="absolute inset-0 transition-opacity duration-1000 ease-in-out"
-                        :class="activeHeroSlide === idx ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
+                        class="group relative overflow-hidden rounded-3xl bg-white p-5 sm:p-6 shadow-sm border border-slate-100 hover:border-rose-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-start gap-4"
                     >
-                        <img
-                            :src="banner.image_url || banner.image"
-                            :alt="banner.title"
-                            class="absolute inset-0 h-full w-full object-cover object-center transform scale-105 transition-transform duration-10000"
-                        />
-                        <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/60 to-transparent"></div>
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent sm:hidden"></div>
-
-                        <!-- Content Overlay -->
-                        <div class="relative h-full flex flex-col justify-center max-w-2xl px-6 sm:px-12 lg:px-16 py-12 space-y-4 sm:space-y-6">
-                            <div v-if="banner.tag" class="inline-flex items-center gap-1.5 rounded-full bg-rose-500/30 backdrop-blur-md px-3.5 py-1 text-[11px] font-black uppercase tracking-widest text-pink-300 border border-pink-400/30 w-fit">
-                                <span class="h-1.5 w-1.5 rounded-full bg-rose-400 animate-ping"></span>
-                                <span>{{ banner.tag }}</span>
-                            </div>
-
-                            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight leading-[1.1] text-white drop-shadow-md">
-                                {{ banner.title }}
-                            </h1>
-
-                            <p class="text-xs sm:text-base text-slate-200 line-clamp-2 sm:line-clamp-3 leading-relaxed max-w-lg">
-                                {{ banner.subtitle || 'Discover dermatologist-tested formulas and luxury cosmetics delivered with guaranteed authenticity.' }}
-                            </p>
-
-                            <div class="flex flex-wrap items-center gap-3 pt-2">
-                                <Link
-                                    :href="banner.target_url || route('products.index')"
-                                    class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:to-pink-600 px-7 py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-xl shadow-rose-950/40 transition duration-300 hover:scale-105"
-                                >
-                                    <span>{{ banner.button_text || 'Shop The Collection' }}</span>
-                                    <span>&rarr;</span>
-                                </Link>
-                                <Link
-                                    :href="route('products.index')"
-                                    class="inline-flex items-center gap-2 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-md px-6 py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-white border border-white/30 transition"
-                                >
-                                    <span>Browse All</span>
-                                </Link>
-                            </div>
+                        <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-rose-50 to-pink-100 border border-rose-100 text-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300 shadow-2xs">
+                            {{ perk.icon }}
                         </div>
-                    </div>
-
-                    <!-- Slide Navigation Dots -->
-                    <div v-if="banners.length > 1" class="absolute bottom-6 right-6 sm:right-12 z-20 flex items-center gap-2">
-                        <button
-                            v-for="(_, bIdx) in banners"
-                            :key="bIdx"
-                            @click="activeHeroSlide = bIdx"
-                            class="h-2 rounded-full transition-all duration-300 cursor-pointer"
-                            :class="activeHeroSlide === bIdx ? 'w-8 bg-rose-500' : 'w-2 bg-white/50 hover:bg-white'"
-                            :aria-label="`Slide ${bIdx + 1}`"
-                        ></button>
-                    </div>
-                </div>
-
-                <!-- Hero Search & Category Pills Floating Ribbon -->
-                <div class="mt-6 p-4 sm:p-5 rounded-3xl bg-white/90 backdrop-blur-xl border border-white/90 shadow-xl shadow-rose-950/5 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <form @submit.prevent="handleSearch" class="relative w-full md:w-80">
-                        <input
-                            v-model="quickSearch"
-                            type="text"
-                            placeholder="Search by brand or product..."
-                            class="w-full pl-9 pr-20 py-2.5 rounded-full text-xs bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 text-slate-900"
-                        />
-                        <span class="absolute left-3 top-3 text-slate-400 text-xs">🔍</span>
-                        <button
-                            type="submit"
-                            class="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-slate-900 hover:bg-rose-600 text-white rounded-full text-[10px] font-bold uppercase transition"
-                        >
-                            Find
-                        </button>
-                    </form>
-
-                    <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none text-xs">
-                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 shrink-0">Explore:</span>
-                        <Link :href="route('products.index', { category: 'skincare' })" class="px-3 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold border border-rose-200/60 shrink-0 transition">
-                            ✨ Skincare
-                        </Link>
-                        <Link :href="route('products.index', { category: 'makeup-cosmetics' })" class="px-3 py-1.5 rounded-full bg-pink-50 hover:bg-pink-100 text-pink-700 font-bold border border-pink-200/60 shrink-0 transition">
-                            💄 Makeup
-                        </Link>
-                        <Link :href="route('products.index', { category: 'haircare-styling' })" class="px-3 py-1.5 rounded-full bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold border border-purple-200/60 shrink-0 transition">
-                            💇‍♀️ Haircare
-                        </Link>
-                        <Link :href="route('products.index', { category: 'fragrances-perfumes' })" class="px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold border border-amber-200/60 shrink-0 transition">
-                            🌸 Perfumes
-                        </Link>
-                        <Link :href="route('products.index', { category: 'organic-herbal' })" class="px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold border border-emerald-200/60 shrink-0 transition">
-                            🌿 Organic
-                        </Link>
+                        <div class="space-y-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-rose-600 transition truncate">
+                                    {{ perk.title }}
+                                </h3>
+                            </div>
+                            <p class="text-[11px] text-slate-500 leading-relaxed">
+                                {{ perk.desc }}
+                            </p>
+                            <span class="inline-block text-[9px] font-extrabold uppercase tracking-wider text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md mt-1">
+                                {{ perk.badge }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 2. FEATURED CATEGORIES SHOWCASE -->
+            <!-- 3. CURATED DEPARTMENTS / SHOP BY CATEGORY -->
             <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex items-end justify-between mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
                     <div>
-                        <div class="inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-rose-700 border border-rose-200 mb-2">
+                        <div class="inline-flex items-center gap-1.5 rounded-full bg-rose-100/80 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-rose-700 border border-rose-200 mb-2">
                             <span>✨ CURATED DEPARTMENTS</span>
                         </div>
                         <h2 class="text-2xl sm:text-3xl font-serif font-black tracking-tight text-slate-900">
-                            Shop by Category
+                            Shop by Beauty Category
                         </h2>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Explore top tier dermatological skincare, makeup essentials, haircare rituals, and luxury perfumes.
+                        </p>
                     </div>
-                    <Link :href="route('products.index')" class="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1">
-                        <span>View All</span>
+                    <Link
+                        :href="route('products.index')"
+                        class="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-4 py-2 rounded-full border border-rose-200/80 transition-all shrink-0"
+                    >
+                        <span>Browse All Categories</span>
                         <span>&rarr;</span>
                     </Link>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5">
                     <Link
                         v-for="cat in categories"
                         :key="cat.id"
                         :href="route('products.index', { category: cat.slug })"
-                        class="group relative overflow-hidden rounded-3xl bg-white p-4 shadow-sm border border-pink-100 hover:shadow-xl hover:border-rose-300 transition-all duration-300 flex flex-col items-center text-center cursor-pointer"
+                        class="group relative overflow-hidden rounded-3xl bg-white p-3.5 sm:p-4 shadow-sm border border-slate-100 hover:shadow-xl hover:border-rose-300 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center cursor-pointer"
                     >
-                        <div class="relative h-24 w-24 sm:h-28 sm:w-28 rounded-2xl overflow-hidden mb-3.5 bg-rose-50 group-hover:scale-105 transition-transform duration-300">
+                        <!-- Category Thumbnail -->
+                        <div class="relative h-28 w-28 sm:h-32 sm:w-32 rounded-2xl overflow-hidden mb-3 bg-gradient-to-tr from-rose-50 to-pink-50">
                             <img
                                 :src="cat.image_url"
                                 :alt="cat.name"
-                                class="h-full w-full object-cover"
+                                class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                             />
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
-                            <span v-if="cat.icon" class="absolute bottom-1.5 right-1.5 text-lg drop-shadow">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+                            
+                            <!-- Category Floating Emoji Badge -->
+                            <span v-if="cat.icon" class="absolute bottom-2 right-2 text-xl drop-shadow-md transform group-hover:scale-125 transition-transform">
                                 {{ cat.icon }}
                             </span>
                         </div>
+
+                        <!-- Category Meta -->
                         <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-rose-600 transition truncate w-full">
                             {{ cat.name }}
                         </h3>
-                        <p class="text-[10px] text-slate-400 mt-0.5">
-                            {{ cat.products_count ?? 10 }}+ Products
-                        </p>
+                        <div class="flex items-center gap-1 mt-1">
+                            <span class="text-[10px] font-semibold text-slate-400">
+                                {{ cat.products_count ?? 12 }}+ Products
+                            </span>
+                        </div>
                     </Link>
                 </div>
             </section>
 
-            <!-- 3. PRODUCT SHOWCASE TABS (Trending, Bestsellers, New) -->
+            <!-- 4. DUAL LUXURY EDITORIAL PROMO BANNERS -->
+            <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Promo Card 1: Skincare Actives -->
+                    <div class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-rose-950 to-slate-900 text-white p-8 sm:p-10 shadow-xl border border-rose-900/30 flex flex-col justify-between min-h-[280px]">
+                        <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-rose-500/20 rounded-full blur-3xl pointer-events-none group-hover:bg-rose-500/30 transition-all duration-700"></div>
+                        <div class="relative z-10 space-y-3 max-w-md">
+                            <div class="inline-flex items-center gap-1.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider">
+                                <span>🧪 CLINICAL SKIN SCIENCE</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-serif font-black tracking-tight text-white leading-tight">
+                                Serums, Retinols & Hydration Heroes
+                            </h3>
+                            <p class="text-xs sm:text-sm text-rose-100/80 leading-relaxed">
+                                Formulated to transform texture, target hyperpigmentation, and restore radiant skin barrier strength.
+                            </p>
+                        </div>
+
+                        <div class="relative z-10 pt-6 mt-6 border-t border-white/10 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] uppercase font-bold text-slate-400">Use Code:</span>
+                                <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20 text-xs font-mono font-black text-rose-300 tracking-wider">
+                                    LUXEGLOW10
+                                </span>
+                            </div>
+                            <Link
+                                :href="route('products.index', { category: 'skincare' })"
+                                class="inline-flex items-center gap-2 rounded-full bg-rose-600 hover:bg-rose-500 text-white px-5 py-2 text-xs font-bold uppercase tracking-wider shadow-lg shadow-rose-950/50 transition-all hover:scale-105"
+                            >
+                                <span>Shop Skincare</span>
+                                <span>&rarr;</span>
+                            </Link>
+                        </div>
+                    </div>
+
+                    <!-- Promo Card 2: Luxury Haute Parfumerie -->
+                    <div class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-950 via-slate-900 to-rose-950 text-white p-8 sm:p-10 shadow-xl border border-amber-900/30 flex flex-col justify-between min-h-[280px]">
+                        <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-amber-500/20 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/30 transition-all duration-700"></div>
+                        <div class="relative z-10 space-y-3 max-w-md">
+                            <div class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider">
+                                <span>🌸 HAUTE PARFUMERIE</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-serif font-black tracking-tight text-white leading-tight">
+                                Signature Niche & French Perfumes
+                            </h3>
+                            <p class="text-xs sm:text-sm text-amber-100/80 leading-relaxed">
+                                Intoxicating oriental ouds, floral bouquets, and long-lasting luxury sillage from top global perfumers.
+                            </p>
+                        </div>
+
+                        <div class="relative z-10 pt-6 mt-6 border-t border-white/10 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] uppercase font-bold text-slate-400">Offer:</span>
+                                <span class="text-xs font-bold text-amber-300">
+                                    Complimentary 5ml Discovery Vial
+                                </span>
+                            </div>
+                            <Link
+                                :href="route('products.index', { category: 'fragrances-perfumes' })"
+                                class="inline-flex items-center gap-2 rounded-full bg-amber-600 hover:bg-amber-500 text-white px-5 py-2 text-xs font-bold uppercase tracking-wider shadow-lg shadow-amber-950/50 transition-all hover:scale-105"
+                            >
+                                <span>Shop Fragrance</span>
+                                <span>&rarr;</span>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. INTERACTIVE PRODUCT SHOWCASE (Trending, Bestsellers, New Arrivals) -->
             <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
                     <div>
                         <div class="inline-flex items-center gap-1.5 rounded-full bg-pink-100 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-pink-700 border border-pink-200 mb-2">
-                            <span>🔥 HANDPICKED COLLECTION</span>
+                            <span>🔥 VERIFIED CATALOG</span>
                         </div>
                         <h2 class="text-2xl sm:text-3xl font-serif font-black tracking-tight text-slate-900">
                             Trending & Bestselling Essentials
                         </h2>
+                        <p class="text-xs text-slate-500 mt-1">
+                            100% original inventory with guaranteed batch authenticity and express dispatch.
+                        </p>
                     </div>
 
-                    <!-- Category Tab Switcher -->
-                    <div class="flex items-center gap-1 rounded-full bg-slate-100 p-1 border border-slate-200 text-xs font-bold">
+                    <!-- Interactive Tab Switcher -->
+                    <div class="inline-flex items-center gap-1 rounded-full bg-slate-100 p-1 border border-slate-200 text-xs font-bold shadow-2xs">
                         <button
                             @click="activeTab = 'trending'"
-                            class="rounded-full px-4 py-1.5 transition-all cursor-pointer"
-                            :class="activeTab === 'trending' ? 'bg-white text-rose-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'"
+                            class="rounded-full px-4 py-2 transition-all cursor-pointer select-none"
+                            :class="activeTab === 'trending' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
                         >
-                            Trending Now
+                            🔥 Trending Drops
                         </button>
                         <button
                             @click="activeTab = 'featured'"
-                            class="rounded-full px-4 py-1.5 transition-all cursor-pointer"
-                            :class="activeTab === 'featured' ? 'bg-white text-rose-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'"
+                            class="rounded-full px-4 py-2 transition-all cursor-pointer select-none"
+                            :class="activeTab === 'featured' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
                         >
-                            Bestsellers
+                            ⭐ Bestsellers
                         </button>
                         <button
                             @click="activeTab = 'new'"
-                            class="rounded-full px-4 py-1.5 transition-all cursor-pointer"
-                            :class="activeTab === 'new' ? 'bg-white text-rose-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'"
+                            class="rounded-full px-4 py-2 transition-all cursor-pointer select-none"
+                            :class="activeTab === 'new' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
                         >
-                            New Arrivals
+                            ✨ Fresh Arrivals
                         </button>
                     </div>
                 </div>
@@ -312,12 +372,12 @@ const addToCart = (product) => {
                     <div
                         v-for="product in currentProducts"
                         :key="product.id"
-                        class="group relative flex flex-col justify-between rounded-3xl bg-white p-4 shadow-sm border border-pink-100/90 hover:shadow-2xl hover:border-rose-300 transition-all duration-300"
+                        class="group relative flex flex-col justify-between rounded-3xl bg-white p-4 shadow-sm border border-slate-100 hover:shadow-2xl hover:border-rose-300 hover:-translate-y-1 transition-all duration-300"
                     >
                         <div>
-                            <!-- Product Image & Badges -->
+                            <!-- Product Image & Overlay Badges -->
                             <div class="relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-50 mb-3.5">
-                                <Link :href="route('products.show', product.slug)">
+                                <Link :href="route('products.show', product.slug)" class="block h-full w-full">
                                     <img
                                         :src="product.image_url"
                                         :alt="product.name"
@@ -326,33 +386,44 @@ const addToCart = (product) => {
                                 </Link>
 
                                 <!-- Top Badges -->
-                                <div class="absolute top-2.5 left-2.5 flex flex-col gap-1">
+                                <div class="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
                                     <span v-if="product.badge" class="rounded-lg bg-rose-600 text-white text-[9px] font-black uppercase px-2 py-0.5 shadow-sm">
                                         {{ product.badge }}
                                     </span>
                                     <span v-if="product.discount_percentage > 0" class="rounded-lg bg-amber-500 text-white text-[9px] font-black px-2 py-0.5 shadow-sm">
-                                        -{{ product.discount_percentage }}%
+                                        -{{ product.discount_percentage }}% OFF
                                     </span>
                                 </div>
 
-                                <!-- Quick Add Overlay Button -->
+                                <!-- Brand Tag Floating -->
+                                <div class="absolute top-2.5 right-2.5 z-10">
+                                    <span class="rounded-lg bg-white/90 backdrop-blur-md text-slate-800 text-[9px] font-extrabold px-2 py-0.5 shadow-xs border border-slate-200">
+                                        {{ product.brand || 'Luxe Care' }}
+                                    </span>
+                                </div>
+
+                                <!-- Quick Add Overlay Action -->
                                 <button
                                     @click="addToCart(product)"
-                                    class="absolute bottom-2.5 inset-x-2.5 py-2.5 rounded-xl bg-slate-900/95 hover:bg-rose-600 text-white text-xs font-bold tracking-wide shadow-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
+                                    :disabled="addingProductId === product.id"
+                                    class="absolute bottom-2.5 inset-x-2.5 py-2.5 rounded-xl bg-slate-900/95 hover:bg-rose-600 text-white text-xs font-bold tracking-wide shadow-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5 z-20"
                                 >
-                                    <span>🛍️</span>
-                                    <span>Quick Add to Bag</span>
+                                    <span v-if="addingProductId === product.id" class="animate-spin text-sm">⏳</span>
+                                    <span v-else>🛍️</span>
+                                    <span>{{ addingProductId === product.id ? 'Adding...' : 'Quick Add to Bag' }}</span>
                                 </button>
                             </div>
 
                             <!-- Product Meta -->
-                            <div class="space-y-1">
-                                <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-                                    <span class="text-rose-500 font-bold uppercase tracking-wider text-[10px]">{{ product.brand || 'Luxe Care' }}</span>
+                            <div class="space-y-1.5">
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span class="text-rose-600 font-bold uppercase tracking-wider text-[10px]">
+                                        {{ product.categoryRelation?.name || 'Cosmetics' }}
+                                    </span>
                                     <div class="flex items-center gap-1 text-amber-500 font-bold">
                                         <span>★</span>
                                         <span>{{ product.rating || '4.9' }}</span>
-                                        <span class="text-slate-400 font-normal">({{ product.reviews_count || 45 }})</span>
+                                        <span class="text-slate-400 font-normal">({{ product.reviews_count || 38 }})</span>
                                     </div>
                                 </div>
 
@@ -365,52 +436,56 @@ const addToCart = (product) => {
                         </div>
 
                         <!-- Price & Action Footer -->
-                        <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between">
+                        <div class="pt-3.5 mt-3.5 border-t border-slate-100 flex items-center justify-between">
                             <div>
                                 <div class="flex items-baseline gap-1.5">
                                     <span class="text-sm sm:text-base font-black text-slate-900">
-                                        PKR {{ Number(product.price).toLocaleString() }}
+                                        {{ formatPrice(product.price) }}
                                     </span>
                                     <span v-if="product.original_price && product.original_price > product.price" class="text-[11px] text-slate-400 line-through">
-                                        {{ Number(product.original_price).toLocaleString() }}
+                                        {{ formatPrice(product.original_price) }}
                                     </span>
                                 </div>
+                                <span class="text-[9px] text-emerald-600 font-semibold block">✓ In Stock & Ready to Ship</span>
                             </div>
 
                             <button
                                 @click="addToCart(product)"
-                                class="h-8 w-8 rounded-full bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 flex items-center justify-center text-xs transition cursor-pointer"
+                                :disabled="addingProductId === product.id"
+                                class="h-9 w-9 rounded-full bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 flex items-center justify-center text-sm transition-all shadow-2xs hover:scale-108 active:scale-95 cursor-pointer"
                                 title="Add to Bag"
                             >
-                                ＋
+                                <span v-if="addingProductId === product.id" class="animate-spin text-xs">⏳</span>
+                                <span v-else>＋</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="text-center mt-10">
+                <!-- Explore Catalog CTA -->
+                <div class="text-center mt-12">
                     <Link
                         :href="route('products.index')"
-                        class="inline-flex items-center gap-2 rounded-full border-2 border-slate-900 hover:bg-slate-900 hover:text-white px-8 py-3 text-xs font-bold uppercase tracking-wider text-slate-900 transition"
+                        class="inline-flex items-center gap-2.5 rounded-full border-2 border-slate-900 hover:bg-slate-900 hover:text-white px-8 py-3.5 text-xs font-bold uppercase tracking-wider text-slate-900 shadow-sm transition-all hover:scale-102"
                     >
-                        <span>Explore Full Marketplace Catalog ({{ stats.total_products || 25 }}+ Products)</span>
+                        <span>Explore Full Catalog ({{ stats.total_products || 25 }}+ Products)</span>
                         <span>&rarr;</span>
                     </Link>
                 </div>
             </section>
 
-            <!-- 4. LUXURY BRAND DIRECTORY -->
+            <!-- 6. WORLD-RENOWNED BRAND SPOTLIGHT -->
             <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="rounded-3xl bg-gradient-to-r from-rose-900 via-pink-900 to-slate-900 text-white p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+                <div class="rounded-3xl bg-gradient-to-r from-slate-950 via-rose-950 to-slate-900 text-white p-8 sm:p-12 shadow-2xl relative overflow-hidden border border-rose-900/30">
                     <div class="relative z-10 max-w-xl space-y-3">
-                        <div class="inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-0.5 text-[10px] font-bold tracking-widest uppercase text-pink-200">
-                            100% ORIGINAL SOURCED
+                        <div class="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-0.5 text-[10px] font-bold tracking-widest uppercase text-rose-200 border border-white/15">
+                            <span>💎 100% ORIGINAL SOURCED</span>
                         </div>
                         <h2 class="text-2xl sm:text-4xl font-serif font-black tracking-tight text-white">
                             World's Most Coveted Brands
                         </h2>
-                        <p class="text-xs sm:text-sm text-pink-100 leading-relaxed">
-                            From clinical skincare heroes to ultra-luxurious niche perfumes, discover authentic inventory with official batch verification.
+                        <p class="text-xs sm:text-sm text-rose-100/80 leading-relaxed">
+                            From clinical skincare powerhouses to ultra-luxurious niche perfumes, discover genuine products with verified batch codes.
                         </p>
                     </div>
 
@@ -420,7 +495,7 @@ const addToCart = (product) => {
                             v-for="brand in (brands.length ? brands : ['The Ordinary', 'CeraVe', 'Fenty Beauty', 'Olaplex', 'COSRX', 'Maybelline', 'L\'Oréal Paris', 'Kayali', 'Maison Francis Kurkdjian', 'Sol de Janeiro'])"
                             :key="brand"
                             :href="route('products.index', { brand: brand })"
-                            class="p-3.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-center font-bold text-xs text-white transition hover:scale-102"
+                            class="p-4 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-center font-bold text-xs text-white transition-all hover:scale-105 hover:border-rose-400/50 shadow-sm"
                         >
                             {{ brand }}
                         </Link>
@@ -428,17 +503,17 @@ const addToCart = (product) => {
                 </div>
             </section>
 
-            <!-- 5. VERIFIED CUSTOMER EXPERIENCES -->
+            <!-- 7. VERIFIED CUSTOMER REVIEWS WITH PRODUCTS -->
             <section v-if="reviews && reviews.length" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-xl mx-auto mb-10 space-y-2">
                     <div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-800 border border-emerald-200">
-                        <span>★ VERIFIED BUYER SATISFACTION</span>
+                        <span>★ VERIFIED BUYER EXPERIENCES</span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-serif font-black text-slate-900">
-                        Loved by 25,000+ Customers
+                        Loved by 25,000+ Verified Buyers
                     </h2>
                     <p class="text-xs text-slate-500">
-                        Real reviews from buyers across Pakistan experiencing authentic transformations.
+                        Real transformations and honest feedback from beauty lovers across Pakistan.
                     </p>
                 </div>
 
@@ -446,37 +521,48 @@ const addToCart = (product) => {
                     <div
                         v-for="rev in reviews"
                         :key="rev.id"
-                        class="rounded-3xl bg-white p-6 shadow-sm border border-pink-100 flex flex-col justify-between"
+                        class="rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:border-pink-200 transition-all flex flex-col justify-between"
                     >
                         <div class="space-y-3">
                             <div class="flex items-center gap-1 text-amber-400 text-sm">
                                 <span v-for="s in (rev.rating || 5)" :key="s">★</span>
                             </div>
-                            <h4 v-if="rev.title" class="font-bold text-slate-900 text-xs">
+                            <h4 v-if="rev.title" class="font-bold text-slate-900 text-xs sm:text-sm">
                                 "{{ rev.title }}"
                             </h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                {{ rev.comment }}
+                            <p class="text-xs text-slate-600 leading-relaxed italic">
+                                "{{ rev.comment }}"
                             </p>
                         </div>
 
-                        <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                            <div class="flex items-center gap-2">
-                                <div class="h-7 w-7 rounded-full bg-rose-100 text-rose-700 font-bold flex items-center justify-center text-[11px]">
-                                    {{ rev.author_name.charAt(0) }}
+                        <!-- Review Footer with User & Purchased Product Reference -->
+                        <div class="pt-4 mt-4 border-t border-slate-100 space-y-2.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-rose-600 to-pink-500 text-white font-bold flex items-center justify-center text-xs shadow-2xs">
+                                        {{ rev.author_name.charAt(0) }}
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-900 text-xs">{{ rev.author_name }}</p>
+                                        <span class="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5">
+                                            <span>✓</span>
+                                            <span>Verified Buyer</span>
+                                        </span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="font-bold text-slate-900 text-[11px]">{{ rev.author_name }}</p>
-                                    <span class="text-[9px] text-emerald-600 font-semibold">✓ Verified Buyer</span>
-                                </div>
+                                <span class="text-[10px] text-slate-400 font-medium">{{ rev.time_ago || 'Recently' }}</span>
                             </div>
-                            <span class="text-[10px] text-slate-400">{{ rev.time_ago || 'Recently' }}</span>
+
+                            <div v-if="rev.product_name" class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-600">
+                                <span class="text-rose-500 font-bold">Purchased:</span>
+                                <span class="truncate font-medium text-slate-800">{{ rev.product_name }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 6. BEAUTY MAGAZINE & EDITORIAL GUIDES -->
+            <!-- 8. BEAUTY MAGAZINE & GLOW GUIDES -->
             <section v-if="latestBlogs && latestBlogs.length" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex items-end justify-between mb-8">
                     <div>
@@ -486,47 +572,85 @@ const addToCart = (product) => {
                         <h2 class="text-2xl sm:text-3xl font-serif font-black text-slate-900">
                             Expert Guides & Glow Routines
                         </h2>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Dermatology insights, makeup masterclasses, and perfume layering techniques.
+                        </p>
                     </div>
-                    <Link :href="route('blogs.index')" class="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1">
-                        <span>Read All</span>
+                    <Link :href="route('blogs.index')" class="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 bg-rose-50 hover:bg-rose-100 px-4 py-2 rounded-full border border-rose-200/80 transition-all shrink-0">
+                        <span>Read All Articles</span>
                         <span>&rarr;</span>
                     </Link>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Link
                         v-for="blog in latestBlogs"
                         :key="blog.id"
                         :href="route('blogs.show', blog.slug)"
-                        class="group overflow-hidden rounded-3xl bg-white shadow-sm border border-pink-100 hover:shadow-xl hover:border-rose-300 transition-all flex flex-col sm:flex-row"
+                        class="group overflow-hidden rounded-3xl bg-white shadow-sm border border-slate-100 hover:shadow-xl hover:border-rose-300 hover:-translate-y-1 transition-all duration-300 flex flex-col"
                     >
-                        <div class="sm:w-2/5 aspect-video sm:aspect-auto overflow-hidden bg-slate-100">
+                        <div class="aspect-video w-full overflow-hidden bg-slate-100 relative">
                             <img
                                 :src="blog.image || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80'"
                                 :alt="blog.title"
-                                class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                class="h-full w-full object-cover group-hover:scale-108 transition-transform duration-500"
                             />
-                        </div>
-                        <div class="sm:w-3/5 p-5 sm:p-6 flex flex-col justify-between space-y-3">
-                            <div class="space-y-1.5">
-                                <span class="text-[10px] font-black uppercase tracking-wider text-rose-600">
-                                    {{ blog.category || 'Skincare Guide' }}
-                                </span>
-                                <h3 class="font-bold text-slate-900 text-sm sm:text-base group-hover:text-rose-600 transition leading-snug">
-                                    {{ blog.title }}
-                                </h3>
-                                <p class="text-xs text-slate-500 line-clamp-2">
-                                    {{ blog.summary || 'Expert beauty insights and skincare routines.' }}
-                                </p>
-                            </div>
-                            <span class="text-xs font-bold text-rose-600 flex items-center gap-1">
-                                <span>Read Article</span>
-                                <span>&rarr;</span>
+                            <span class="absolute top-3 left-3 rounded-lg bg-slate-900/80 backdrop-blur-md text-white text-[9px] font-black uppercase px-2.5 py-1">
+                                {{ blog.category || 'Skincare Edit' }}
                             </span>
                         </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+                            <div class="space-y-2">
+                                <h3 class="font-bold text-slate-900 text-sm sm:text-base group-hover:text-rose-600 transition leading-snug line-clamp-2">
+                                    {{ blog.title }}
+                                </h3>
+                                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                    {{ blog.summary || 'Expert beauty insights, clinical routine breakdowns, and authentic ingredient analyses.' }}
+                                </p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-rose-600">
+                                <span>Read Full Story</span>
+                                <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                            </div>
+                        </div>
                     </Link>
+                </div>
+            </section>
+
+            <!-- 9. VIP BEAUTY CLUB & NEWSLETTER BANNER -->
+            <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8">
+                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-rose-950 via-pink-900 to-slate-950 text-white p-8 sm:p-12 shadow-2xl border border-rose-800/40">
+                    <div class="relative z-10 max-w-2xl space-y-3">
+                        <div class="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-[10px] font-black uppercase tracking-widest text-pink-200 border border-white/20">
+                            <span>👑 THE LUXE BEAUTY CLUB</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-4xl font-serif font-black tracking-tight text-white">
+                            Unlock PKR 500 Off Your First Order
+                        </h2>
+                        <p class="text-xs sm:text-sm text-pink-100/90 leading-relaxed">
+                            Join over 25,000 beauty connoisseurs. Receive secret flash sales, early access to new launches, and curated skincare advice.
+                        </p>
+
+                        <!-- Form -->
+                        <form @submit.prevent="handleNewsletter" class="flex flex-col sm:flex-row gap-2.5 pt-4 max-w-lg">
+                            <input
+                                v-model="newsletterEmail"
+                                type="email"
+                                placeholder="Enter your email address..."
+                                required
+                                class="flex-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-5 py-3 text-xs sm:text-sm text-white placeholder-pink-200/60 focus:bg-white/20 focus:border-rose-400 focus:ring-0"
+                            />
+                            <button
+                                type="submit"
+                                class="rounded-full bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 hover:from-rose-500 hover:to-pink-500 text-white font-bold text-xs uppercase tracking-wider px-7 py-3 shadow-lg hover:scale-105 transition-all cursor-pointer shrink-0"
+                            >
+                                {{ newsletterSubscribed ? 'Subscribed!' : 'Claim PKR 500' }}
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </section>
         </div>
     </PublicLayout>
 </template>
+

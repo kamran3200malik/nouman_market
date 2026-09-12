@@ -39,30 +39,30 @@ const form = useForm({
 // Quick Templates
 const templates = [
     {
-        name: '🌸 Seasonal Glam Promo',
-        title: '✨ Exclusive Weekend Beauty Offer - Up to 25% Off Treatments!',
-        message: 'Book your favorite salon and bridal makeovers this weekend with exclusive savings across top verified studios.',
+        name: '🌸 Seasonal Beauty Promo',
+        title: '✨ Exclusive Weekend Beauty Sale - Up to 25% Off Luxury Skincare!',
+        message: 'Explore our top verified cosmetics, serums, and luxury fragrances this weekend with exclusive savings across original brands.',
         target_type: 'customers',
         category: 'promotion',
     },
     {
-        name: '👑 Salon Partner Update',
-        title: '👑 New Platform Growth Features Now Live for Beauty Studios',
-        message: 'Explore your new salon analytics, instant booking calendar management, and zero-commission subscription options.',
+        name: '🛍️ Marketplace Vendor Update',
+        title: '📦 New Inventory & Order Tracking Tools Now Live for Sellers',
+        message: 'Manage your product catalogs, monitor daily sales volumes, and streamline shipping operations from your dashboard.',
         target_type: 'artists',
         category: 'announcement',
     },
     {
         name: '⚡ Scheduled Maintenance',
         title: '⚡ Routine System Upgrades Tonight at 02:00 AM PKT',
-        message: 'We will be conducting brief performance upgrades for 30 minutes. Appointments and bookings will resume smoothly afterwards.',
+        message: 'We will be conducting brief performance upgrades for 30 minutes. Shopping bag and checkout services will resume smoothly afterwards.',
         target_type: 'all',
         category: 'maintenance',
     },
     {
-        name: '💎 VIP Salon Perk',
-        title: '💎 Exclusive Feature Spotlight for Pro Subscribed Salons',
-        message: 'Your studio is featured on top homepage rankings with 0% booking commission take.',
+        name: '💎 Top Vendor Spotlight',
+        title: '💎 Exclusive Feature Spotlight for Verified Merchant Partners',
+        message: 'Your product listings are featured on top homepage positions with expedited fulfillment badges.',
         target_type: 'subscribers',
         category: 'announcement',
     },
@@ -78,13 +78,13 @@ const applyTemplate = (tpl) => {
 const getTargetBadge = (target) => {
     switch (target) {
         case 'customers':
-            return { label: '👰 Customers Only', class: 'bg-rose-100 text-rose-800 border-rose-200' };
+            return { label: '🛍️ Customers Only', class: 'bg-rose-100 text-rose-800 border-rose-200' };
         case 'artists':
-            return { label: '👑 Salons & Artists', class: 'bg-purple-100 text-purple-800 border-purple-200' };
+            return { label: '🏢 Verified Sellers', class: 'bg-purple-100 text-purple-800 border-purple-200' };
         case 'subscribers':
-            return { label: '💎 Pro Subscribed Salons', class: 'bg-amber-100 text-amber-800 border-amber-200' };
+            return { label: '💎 Top Merchants', class: 'bg-amber-100 text-amber-800 border-amber-200' };
         default:
-            return { label: '🌐 All Users (Customers + Studios)', class: 'bg-blue-100 text-blue-800 border-blue-200' };
+            return { label: '🌐 All Users (Buyers + Vendors)', class: 'bg-blue-100 text-blue-800 border-blue-200' };
     }
 };
 
@@ -171,7 +171,7 @@ const getAvatar = (img, name = 'User') => {
                         </span>
                     </div>
                     <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                        Send targeted multi-channel announcements, seasonal deals, and system updates to customers and salon partners.
+                        Send targeted multi-channel announcements, seasonal deals, and order updates to buyers and sellers.
                     </p>
                 </div>
             </div>
@@ -185,35 +185,35 @@ const getAvatar = (img, name = 'User') => {
                         <h3 class="text-2xl sm:text-3xl font-serif font-bold text-slate-900 mt-1">
                             {{ Number(stats.total_customers).toLocaleString() }}
                         </h3>
-                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Registered marketplace clients</p>
+                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Registered marketplace buyers</p>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center text-xl shadow-xs">
-                        👰
+                        🛍️
                     </div>
                 </div>
 
-                <!-- Active Salon Studios -->
+                <!-- Active Sellers -->
                 <div class="p-5 rounded-3xl bg-white border border-rose-100 shadow-xs flex items-center justify-between">
                     <div>
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-purple-800">Verified Studios</p>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-purple-800">Verified Vendors</p>
                         <h3 class="text-2xl sm:text-3xl font-serif font-bold text-slate-900 mt-1">
                             {{ Number(stats.total_artists).toLocaleString() }}
                         </h3>
-                        <p class="text-[10px] text-purple-700 font-semibold mt-0.5">Approved salon partners</p>
+                        <p class="text-[10px] text-purple-700 font-semibold mt-0.5">Approved seller merchants</p>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center text-xl shadow-xs">
-                        👑
+                        🏢
                     </div>
                 </div>
 
-                <!-- Subscribed Pro Studios -->
+                <!-- Featured Sellers -->
                 <div class="p-5 rounded-3xl bg-white border border-rose-100 shadow-xs flex items-center justify-between">
                     <div>
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-amber-800">Pro Subscribed</p>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-amber-800">Featured Sellers</p>
                         <h3 class="text-2xl sm:text-3xl font-serif font-bold text-slate-900 mt-1">
                             {{ Number(stats.subscribed_artists).toLocaleString() }}
                         </h3>
-                        <p class="text-[10px] text-amber-700 font-semibold mt-0.5">Monthly plan studios</p>
+                        <p class="text-[10px] text-amber-700 font-semibold mt-0.5">Premier partner stores</p>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl shadow-xs">
                         💎
@@ -291,9 +291,9 @@ const getAvatar = (img, name = 'User') => {
                                 <button
                                     v-for="target in [
                                         { key: 'all', icon: '🌐', label: 'All Users' },
-                                        { key: 'customers', icon: '👰', label: 'Customers' },
-                                        { key: 'artists', icon: '👑', label: 'All Studios' },
-                                        { key: 'subscribers', icon: '💎', label: 'Pro Salons' },
+                                        { key: 'customers', icon: '🛍️', label: 'Buyers' },
+                                        { key: 'artists', icon: '🏢', label: 'All Vendors' },
+                                        { key: 'subscribers', icon: '💎', label: 'Top Sellers' },
                                     ]"
                                     :key="target.key"
                                     type="button"
@@ -502,7 +502,7 @@ const getAvatar = (img, name = 'User') => {
                     <AppEmptyState
                         icon="🔔"
                         title="No notifications dispatched yet"
-                        description="Compose a broadcast in the Broadcast Center to reach clients and salon partners."
+                        description="Compose a broadcast in the Broadcast Center to reach buyers and vendor partners."
                     />
                 </div>
 

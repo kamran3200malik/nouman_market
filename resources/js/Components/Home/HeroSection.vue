@@ -2,14 +2,9 @@
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import { storageUrl } from '@/Utils/storage';
-import { detectCurrentAddress } from '@/Utils/geolocation';
 
 const props = defineProps({
     banners: {
-        type: Array,
-        default: () => [],
-    },
-    cities: {
         type: Array,
         default: () => [],
     },
@@ -17,13 +12,14 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    services: {
+    categories: {
         type: Array,
         default: () => [],
     },
 });
 
 const formatPrice = (price) => {
+    if (price === null || price === undefined || isNaN(price)) return 'PKR 0';
     return new Intl.NumberFormat('en-PK', {
         style: 'currency',
         currency: 'PKR',
@@ -33,37 +29,35 @@ const formatPrice = (price) => {
 
 // Search State
 const searchTerm = ref('');
-const selectedCity = ref('');
-const selectedServiceType = ref('all'); // 'all', 'salon', 'home'
-const isDetectingLocation = ref(false);
+const selectedCategory = ref('all');
 
 // 1. Portion 1: Admin Hero Banner Carousel
 const defaultHeroSlides = [
     {
         id: 'default-1',
-        title: 'Haute Couture Bridal & Luxury Beauty Artists',
-        subtitle: 'Book top-tier makeup stylists, mehndi artists, and beauty studios with 100% Escrow protection.',
+        title: 'Luxury Skincare & Dermal Radiance Elixirs',
+        subtitle: 'Discover 100% authentic international serums, hydrating creams, and clinical glow formulas.',
         image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1600&q=80',
-        price: 35000,
+        price: 4500,
         tag: '🌸 Featured Haute Beauté',
         link: null,
     },
     {
         id: 'default-2',
-        title: 'Signature Hair Couture, Balayage & French Blowouts',
-        subtitle: 'Transform your style with certified master colorists and top salons near you with instant booking.',
+        title: 'Signature Hair Care, Argan Oils & Keratin Therapies',
+        subtitle: 'Transform your hair with pure Moroccan elixirs, restorative hair masks, and clinical scalp care.',
         image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1600&q=80',
-        price: 16000,
-        tag: '💎 Top Rated Salons',
+        price: 3800,
+        tag: '💎 Top Rated Hair Care',
         link: null,
     },
     {
         id: 'default-3',
-        title: 'Platinum HydraFacial & Glass-Skin Dermal Radiance',
-        subtitle: 'Revitalize and nourish your skin with certified aesthetic clinicians and premium wellness spas.',
-        image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1600&q=80',
-        price: 9500,
-        tag: '✨ Clinical Glow Therapy',
+        title: 'Haute Couture Makeup, Palettes & Velvet Lip Clays',
+        subtitle: 'High-pigment international beauty essentials delivered with 100% genuine product guarantee.',
+        image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1600&q=80',
+        price: 5200,
+        tag: '✨ Exclusive Glam',
         link: null,
     },
 ];
@@ -75,12 +69,12 @@ const heroSlides = computed(() => {
             return mainBanners.map(b => ({
                 id: b.id,
                 title: b.title,
-                subtitle: b.description,
-                image: storageUrl(b.image, 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1600&q=80'),
+                subtitle: b.description || b.subtitle,
+                image: storageUrl(b.image || b.image_url, defaultHeroSlides[0].image),
                 price: b.price ? Number(b.price) : null,
-                tag: b.title ? `🌸 ${b.title}` : null,
+                tag: b.tag || (b.title ? `🌸 ${b.title}` : null),
                 link: b.target_url || b.link || null,
-                button_text: b.button_text || b.resolved_button_text || 'Explore',
+                button_text: b.button_text || 'Shop Now',
             }));
         }
     }
@@ -138,39 +132,21 @@ const goToSlide = (index) => {
 };
 
 const resolveLink = (link) => {
-    if (!link) return route('artists.index');
-    if (link.startsWith('http://') || link.startsWith('https://')) return link;
-    if (link.startsWith('/')) return link;
-
-    try {
-        const cleaned = link.replace(/^\/+/, '');
-        const [path, queryString] = cleaned.split('?');
-        const params = {};
-        if (queryString) {
-            new URLSearchParams(queryString).forEach((val, key) => {
-                params[key] = val;
-            });
-        }
-
-        if (path === 'artists') return route('artists.index', params);
-        if (path === 'services') return route('services.index', params);
-        if (path === 'products') return route('products.index', params);
-        if (path === 'bookings/create' || path === 'bookings') return route('bookings.create', params);
-        if (path === 'offers') return route('artists.index', params);
-        return route().has(path) ? route(path, params) : (link.startsWith('/') ? link : '/' + link);
-    } catch {
-        return link.startsWith('/') ? link : route('artists.index');
-    }
+    if (!link) return route('products.index');
+    if (link.startsWith('http://') || link.startsWith('https://') || link.startsWith('/')) return link;
+    return route('products.index');
 };
 
-// 2. Portion 2: Right Spotlight Products & Services
+// 2. Portion 2: Right Spotlight Products
 const fallbackProducts = [
     {
         id: 1,
         name: 'Organic Moroccan Argan Hair Serum',
         slug: 'organic-argan-hair-oil',
+        brand: 'Luxe Organics',
         description: 'Deep nourishing elixir for frizzy hair, heat protection & high gloss shine.',
         price: 3450,
+        original_price: 4200,
         image: 'https://images.unsplash.com/photo-1608248597359-00f7e44a953e?auto=format&fit=crop&w=600&q=80',
         rating: 4.9,
         reviewsCount: 124,
@@ -181,8 +157,10 @@ const fallbackProducts = [
         id: 2,
         name: 'Gold Radiance Vitamin C Brightening Serum',
         slug: 'gold-radiance-serum',
+        brand: 'Glow Botanics',
         description: 'Antioxidant booster for instant radiant glow and dark spot correction.',
         price: 2890,
+        original_price: 3500,
         image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80',
         rating: 4.8,
         reviewsCount: 98,
@@ -191,44 +169,21 @@ const fallbackProducts = [
     },
 ];
 
-const fallbackServices = [
-    {
-        id: 1,
-        name: 'Platinum HydraFacial & Deep Glow',
-        slug: 'platinum-hydrafacial',
-        description: 'Multi-step clinical facial: vortex extraction, hydration & LED light radiance.',
-        price: 8500,
-        duration: 60,
-        venue: 'In-Salon & Home',
-        image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=600&q=80',
-        target_url: '/services',
-    },
-    {
-        id: 2,
-        name: 'Signature Bridal Glam & Barat Couture',
-        slug: 'bridal-glam-barat',
-        description: 'HD Airbrush makeup, hair sculpting, dupatta setting & jewelry fixture.',
-        price: 38000,
-        duration: 180,
-        venue: 'In-Salon & Studio',
-        image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80',
-        target_url: '/services',
-    },
-];
-
 const displayProducts = computed(() => {
     if (props.products && props.products.length > 0) {
-        return props.products.slice(0, 4).map(p => ({
+        return props.products.slice(0, 6).map(p => ({
             id: p.id,
             name: p.name,
             slug: p.slug,
-            description: p.description,
+            brand: p.brand || 'Luxe Beauty',
+            description: p.description || p.short_description,
             price: Number(p.price),
-            image: storageUrl(p.image, fallbackProducts[0].image),
+            original_price: p.original_price ? Number(p.original_price) : null,
+            image: storageUrl(p.image || p.image_url, fallbackProducts[0].image),
             rating: p.rating || 4.9,
             reviewsCount: p.reviews_count || 85,
             is_trending: Boolean(p.is_trending ?? true),
-            target_url: route('products.index', { highlight: p.id }),
+            target_url: route('products.show', p.slug || p.id),
         }));
     }
     return fallbackProducts;
@@ -237,24 +192,21 @@ const displayProducts = computed(() => {
 const approvedSlidingProducts = computed(() => {
     let list = [];
     if (props.products && props.products.length > 0) {
-        // Filter products approved by admin and active
-        list = props.products.filter(p => {
-            const isApproved = !p.approval_status || p.approval_status === 'approved';
-            const isActive = p.is_active !== false && p.is_active !== 0;
-            return isApproved && isActive;
-        }).map(p => ({
+        list = props.products.filter(p => p.is_active !== false).map(p => ({
             id: p.id,
             name: p.name,
             slug: p.slug,
-            brand: p.brand || (p.seller_name || 'BeautyBook Luxe'),
+            brand: p.brand || 'Luxe Beauty',
             price: Number(p.price),
             original_price: p.original_price ? Number(p.original_price) : null,
-            image: storageUrl(p.image, fallbackProducts[0].image),
+            image: storageUrl(p.image || p.image_url, fallbackProducts[0].image),
             rating: Number(p.rating || 4.9),
             reviews_count: p.reviews_count || 45,
-            badge: p.badge || (p.is_trending ? '🔥 Trending' : '✨ Approved'),
-            discount_percentage: p.discount_percentage || (p.original_price && p.original_price > p.price ? Math.round(((p.original_price - p.price) / p.original_price) * 100) : 0),
-            target_url: route('products.index', { search: p.name }),
+            badge: p.badge || (p.is_trending ? '🔥 Trending' : '✨ 100% Genuine'),
+            discount_percentage: p.original_price && p.original_price > p.price
+                ? Math.round(((p.original_price - p.price) / p.original_price) * 100)
+                : 0,
+            target_url: route('products.show', p.slug || p.id),
         }));
     }
 
@@ -262,8 +214,10 @@ const approvedSlidingProducts = computed(() => {
         list = fallbackProducts.map(p => ({
             ...p,
             reviews_count: p.reviewsCount || 50,
-            badge: p.tag || '✨ Approved',
-            discount_percentage: p.original_price && p.original_price > p.price ? Math.round(((p.original_price - p.price) / p.original_price) * 100) : 0,
+            badge: '✨ Genuine',
+            discount_percentage: p.original_price && p.original_price > p.price
+                ? Math.round(((p.original_price - p.price) / p.original_price) * 100)
+                : 0,
             target_url: route('products.index'),
         }));
     }
@@ -275,11 +229,9 @@ const shouldAnimateMarquee = computed(() => approvedSlidingProducts.value.length
 
 const displaySlidingProducts = computed(() => {
     const list = approvedSlidingProducts.value;
-    // Only repeat items for continuous infinite marquee if there are at least 4 unique products
     if (list.length >= 4) {
         return [...list, ...list];
     }
-    // 1 to 3 items: display each unique product once without duplicates
     return list;
 });
 
@@ -308,7 +260,7 @@ const addProductToBag = (product, e) => {
             });
         }
         localStorage.setItem('beautybook_cart', JSON.stringify(cart));
-        window.dispatchEvent(new CustomEvent('cart-updated', { detail: { cart } }));
+        window.dispatchEvent(new Event('cart-updated'));
 
         addedToBag.value[product.id] = true;
         toastMsg.value = `🛍️ Added "${product.name}" to your bag!`;
@@ -322,43 +274,19 @@ const addProductToBag = (product, e) => {
     }
 };
 
-const displayServices = computed(() => {
-    if (props.services && props.services.length > 0) {
-        return props.services.slice(0, 4).map(s => {
-            const artistId = s.artist_profile_id || s.artist_profile?.id;
-            return {
-                id: s.id,
-                name: s.name,
-                slug: s.slug,
-                description: s.description,
-                price: Number(s.price),
-                duration: s.duration_minutes || 60,
-                venue: s.service_type === 'home' ? 'At-Home Service' : (s.service_type === 'both' ? 'Salon & Home' : 'In-Salon'),
-                image: storageUrl(s.image, fallbackServices[0].image),
-                artist_profile_id: artistId,
-                artist_name: s.artist_profile?.business_name || s.artist_profile?.user?.name,
-                target_url: artistId
-                    ? route('bookings.create', { service: s.id, artist: artistId })
-                    : (s.slug ? route('artists.index', { search: s.name }) : route('services.index')),
-            };
-        });
-    }
-    return fallbackServices;
-});
-
 const currentProductIndex = ref(0);
-const currentServiceIndex = ref(0);
+const secondaryProductIndex = ref(1);
 let productTimer = null;
-let serviceTimer = null;
 
 const activeProduct = computed(() => {
     const list = displayProducts.value;
     return list[currentProductIndex.value % list.length] || list[0] || fallbackProducts[0];
 });
 
-const activeService = computed(() => {
-    const list = displayServices.value;
-    return list[currentServiceIndex.value % list.length] || list[0] || fallbackServices[0];
+const activeSecondaryProduct = computed(() => {
+    const list = displayProducts.value;
+    const idx = list.length > 1 ? (secondaryProductIndex.value % list.length) : 0;
+    return list[idx] || list[0] || fallbackProducts[1];
 });
 
 const rightTopBanner = computed(() => {
@@ -368,10 +296,10 @@ const rightTopBanner = computed(() => {
             return {
                 id: b.id,
                 title: b.title,
-                description: b.description,
-                image: storageUrl(b.image, 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80'),
+                description: b.description || b.subtitle,
+                image: storageUrl(b.image || b.image_url, defaultHeroSlides[0].image),
                 link: b.target_url || b.link || null,
-                button_text: b.button_text || b.resolved_button_text || 'Shop',
+                button_text: b.button_text || 'Shop',
                 price: b.price ? Number(b.price) : null,
             };
         }
@@ -386,10 +314,10 @@ const rightBottomBanner = computed(() => {
             return {
                 id: b.id,
                 title: b.title,
-                description: b.description,
-                image: storageUrl(b.image, 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80'),
+                description: b.description || b.subtitle,
+                image: storageUrl(b.image || b.image_url, defaultHeroSlides[1].image),
                 link: b.target_url || b.link || null,
-                button_text: b.button_text || b.resolved_button_text || 'Book',
+                button_text: b.button_text || 'Shop',
                 price: b.price ? Number(b.price) : null,
             };
         }
@@ -397,72 +325,11 @@ const rightBottomBanner = computed(() => {
     return null;
 });
 
-const addedProducts = ref({});
-const buyProduct = (product) => {
-    addedProducts.value[product.id] = true;
-    setTimeout(() => {
-        addedProducts.value[product.id] = false;
-    }, 2000);
-    router.visit(route('products.index', { highlight: product.id }));
-};
-
-// Location Matching & Detection
-const matchCityWithProps = (cityName) => {
-    if (!cityName) return null;
-    const cleanName = cityName.trim().toLowerCase();
-    if (!props.cities || !props.cities.length) return cityName;
-    const matched = props.cities.find(c => {
-        const cName = ((typeof c === 'object' ? c.name : c) || '').trim().toLowerCase();
-        return cName === cleanName || cleanName.includes(cName) || cName.includes(cleanName);
-    });
-    return matched ? (typeof matched === 'object' ? matched.name : matched) : cityName;
-};
-
-const detectLocation = async (isSilent = false) => {
-    isDetectingLocation.value = true;
-    try {
-        const loc = await detectCurrentAddress();
-        const detected = loc.city || loc.area || loc.state;
-        if (detected) {
-            const matched = matchCityWithProps(detected);
-            selectedCity.value = matched || detected;
-        } else if (loc.fullAddress) {
-            selectedCity.value = loc.fullAddress;
-        }
-    } catch (e) {
-        console.warn('Geolocation error:', e);
-        if (!isSilent) {
-            alert(e.message || 'Could not auto-detect location. Please select a city manually.');
-        }
-    } finally {
-        isDetectingLocation.value = false;
-    }
-};
-
-onMounted(() => {
-    // Check if city was passed in URL query params
-    if (typeof window !== 'undefined') {
-        const urlParams = new URLSearchParams(window.location.search);
-        const cityParam = urlParams.get('city');
-        if (cityParam) {
-            selectedCity.value = cityParam;
-        }
-    }
-
-    // Auto-detect and populate location on homepage load
-    if (!selectedCity.value) {
-        detectLocation(true);
-    }
-});
-
 function executeSearch() {
     const queryParams = {};
     if (searchTerm.value.trim()) queryParams.search = searchTerm.value.trim();
-    if (selectedCity.value) queryParams.city = selectedCity.value;
-    if (selectedServiceType.value === 'home') queryParams.home_service = 1;
-    if (selectedServiceType.value === 'salon') queryParams.salon_service = 1;
-
-    router.get(route('artists.index'), queryParams);
+    if (selectedCategory.value && selectedCategory.value !== 'all') queryParams.category = selectedCategory.value;
+    router.get(route('products.index'), queryParams);
 }
 
 function quickSearch(tag) {
@@ -471,34 +338,28 @@ function quickSearch(tag) {
 }
 
 const trendingTags = [
-    { label: '👰 Royal Bridal', query: 'Bridal Makeup' },
-    { label: '✨ HydraFacial', query: 'HydraFacial' },
-    { label: '💇‍♀️ Balayage', query: 'Balayage' },
-    { label: '💅 Gel Nails', query: 'Nails' },
-    { label: '🎨 Organic Mehndi', query: 'Mehndi' },
+    { label: '✨ Vitamin C Serum', query: 'Serum' },
+    { label: '💄 Matte Lipstick', query: 'Lipstick' },
+    { label: '🧴 Hydra Moisturizer', query: 'Moisturizer' },
+    { label: '🌿 Argan Hair Oil', query: 'Argan' },
+    { label: '🌸 Luxury Perfume', query: 'Perfume' },
 ];
 
 onMounted(() => {
-    if (!selectedCity.value && props.cities && props.cities.length > 0) {
-        selectedCity.value = props.cities[0].name;
-    }
     carouselTimer = setInterval(() => {
         if (!isCarouselPaused.value) {
             nextSlide();
         }
     }, 5500);
     productTimer = setInterval(() => {
-        currentProductIndex.value = (currentProductIndex.value + 1) % displayProducts.value.length;
+        currentProductIndex.value = (currentProductIndex.value + 1) % (displayProducts.value.length || 1);
+        secondaryProductIndex.value = (secondaryProductIndex.value + 1) % (displayProducts.value.length || 1);
     }, 6500);
-    serviceTimer = setInterval(() => {
-        currentServiceIndex.value = (currentServiceIndex.value + 1) % displayServices.value.length;
-    }, 6000);
 });
 
 onBeforeUnmount(() => {
     if (carouselTimer) clearInterval(carouselTimer);
     if (productTimer) clearInterval(productTimer);
-    if (serviceTimer) clearInterval(serviceTimer);
 });
 </script>
 
@@ -510,11 +371,11 @@ onBeforeUnmount(() => {
         <div class="pointer-events-none absolute top-1/3 right-12 h-72 w-72 rounded-full bg-purple-500/15 blur-3xl"></div>
 
         <div class="relative grid gap-3.5 sm:gap-4 lg:grid-cols-12 lg:items-stretch">
-            <!-- LEFT COLUMN: MAIN EDITORIAL BILLBOARD & (ON DESKTOP ONLY) SEARCH HUB -->
-            <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-3.5 sm:gap-4">
+            <!-- LEFT COLUMN: MAIN EDITORIAL BILLBOARD -->
+            <div class="lg:col-span-7 xl:col-span-8 flex flex-col">
                 <!-- PORTION 1: ULTRA-LUXURY EDITORIAL BILLBOARD -->
                 <div
-                    class="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-pink-500/20 bg-[#0c0612] min-h-[19.5rem] sm:min-h-[23rem] lg:min-h-[27rem] xl:min-h-[28.5rem] flex flex-col justify-between group/hero select-none"
+                    class="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-pink-500/20 bg-[#0c0612] h-full min-h-[20rem] sm:min-h-[24rem] lg:min-h-[33.5rem] flex flex-col justify-between group/hero select-none"
                     @mouseenter="isCarouselPaused = true"
                     @mouseleave="isCarouselPaused = false"
                     @touchstart="handleTouchStart"
@@ -544,30 +405,30 @@ onBeforeUnmount(() => {
                                 >
                                     <img
                                         :src="slide.image"
-                                        :alt="slide.title || 'BeautyBook Featured'"
+                                        :alt="slide.title || 'Marketplace Featured'"
                                         class="h-full w-full object-cover object-center sm:object-right transform transition-transform duration-10000 ease-out scale-100 group-hover/hero:scale-105"
                                         loading="eager"
                                     />
-                                    <!-- Soft Top & Bottom Edge Vignette for Text Contrast (Middle 75% 100% Clear) -->
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none"></div>
+                                    <!-- Soft Top & Bottom Edge Vignette for Text Contrast -->
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/40 pointer-events-none"></div>
                                 </Link>
                             </div>
                         </transition-group>
                     </div>
 
                     <!-- Editorial Layer (Top Bar + Bottom Title & Action Bar) -->
-                    <div class="relative z-10 p-3.5 sm:p-5 lg:p-6 flex flex-col justify-between h-full space-y-3 pointer-events-none">
-                        <!-- Top Row: Dynamic Tag & Slide Indicators (No Hardcoded Location) -->
+                    <div class="relative z-10 p-4 sm:p-6 lg:p-7 flex flex-col justify-between h-full space-y-4 pointer-events-none">
+                        <!-- Top Row: Dynamic Tag & Slide Indicators -->
                         <div class="flex items-center justify-between gap-2 flex-wrap pointer-events-auto">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <div v-if="activeHeroSlide.tag" class="inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-xl px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-pink-200 border border-pink-500/30 shadow-md">
+                                <div v-if="activeHeroSlide.tag" class="inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-xl px-3.5 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-pink-200 border border-pink-500/30 shadow-md">
                                     <span class="text-rose-400">✨</span>
                                     <span>{{ activeHeroSlide.tag }}</span>
                                 </div>
                             </div>
 
                             <!-- Slide Dots Counter -->
-                            <div class="flex items-center gap-2 bg-black/50 backdrop-blur-xl px-2.5 sm:px-3 py-1 rounded-full border border-white/20 shadow-sm">
+                            <div class="flex items-center gap-2 bg-black/50 backdrop-blur-xl px-3 py-1 rounded-full border border-white/20 shadow-sm">
                                 <span class="text-[11px] font-mono font-bold text-pink-200">
                                     0{{ (currentSlide % (heroSlides.length || 1)) + 1 }} / 0{{ heroSlides.length || 1 }}
                                 </span>
@@ -584,26 +445,26 @@ onBeforeUnmount(() => {
                             </div>
                         </div>
 
-                        <!-- Bottom Action & Title Strip (100% Dynamic from active banner) -->
-                        <div class="flex items-end sm:items-center justify-between gap-3 pt-2.5 pb-1 px-1 border-t border-white/15 pointer-events-auto">
-                            <div class="space-y-0.5 max-w-lg text-left">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <h2 v-if="activeHeroSlide.title" class="font-serif text-sm sm:text-base lg:text-lg font-bold text-white leading-tight drop-shadow-md line-clamp-1">
+                        <!-- Bottom Action & Title Strip -->
+                        <div class="flex items-end sm:items-center justify-between gap-4 pt-4 pb-2 px-1 border-t border-white/15 pointer-events-auto backdrop-blur-xs">
+                            <div class="space-y-1 max-w-xl text-left">
+                                <div class="flex items-center gap-2.5 flex-wrap">
+                                    <h2 v-if="activeHeroSlide.title" class="font-serif text-base sm:text-xl lg:text-2xl font-bold text-white leading-tight drop-shadow-md">
                                         {{ activeHeroSlide.title }}
                                     </h2>
-                                    <span v-if="activeHeroSlide.price" class="inline-flex items-center px-2 py-0.5 rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 text-white font-serif text-xs sm:text-sm font-extrabold shadow-sm border border-white/20">
+                                    <span v-if="activeHeroSlide.price" class="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 text-white font-serif text-xs sm:text-sm font-extrabold shadow-sm border border-white/20">
                                         {{ formatPrice(activeHeroSlide.price) }}
                                     </span>
                                 </div>
-                                <p v-if="activeHeroSlide.subtitle" class="text-[11px] sm:text-xs text-pink-100/90 line-clamp-1 leading-normal font-normal drop-shadow-xs">
+                                <p v-if="activeHeroSlide.subtitle" class="text-xs sm:text-sm text-pink-100/90 line-clamp-2 leading-relaxed font-normal drop-shadow-xs">
                                     {{ activeHeroSlide.subtitle }}
                                 </p>
                             </div>
                             <Link
                                 :href="resolveLink(activeHeroSlide.link)"
-                                class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:to-pink-600 px-3.5 sm:px-4 py-1.5 text-xs font-bold text-white shadow-lg shadow-pink-900/30 hover:shadow-rose-600/40 transition-all duration-200 hover:scale-102 cursor-pointer shrink-0 pointer-events-auto"
+                                class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:to-pink-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-pink-900/30 hover:shadow-rose-600/40 transition-all duration-200 hover:scale-105 cursor-pointer shrink-0 pointer-events-auto"
                             >
-                                <span>{{ activeHeroSlide.button_text || 'Explore' }}</span>
+                                <span>{{ activeHeroSlide.button_text || 'Shop Now' }}</span>
                                 <span>&rarr;</span>
                             </Link>
                         </div>
@@ -613,7 +474,7 @@ onBeforeUnmount(() => {
                     <button
                         type="button"
                         @click.stop="prevSlide"
-                        class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-20 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-black/40 hover:bg-black/80 text-white backdrop-blur-xl border border-white/20 transition duration-200 cursor-pointer shadow-lg opacity-80 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105"
+                        class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/40 hover:bg-black/80 text-white backdrop-blur-xl border border-white/20 transition duration-200 cursor-pointer shadow-lg opacity-80 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105"
                         aria-label="Previous Slide"
                     >
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -623,7 +484,7 @@ onBeforeUnmount(() => {
                     <button
                         type="button"
                         @click.stop="nextSlide"
-                        class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-20 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-black/40 hover:bg-black/80 text-white backdrop-blur-xl border border-white/20 transition duration-200 cursor-pointer shadow-lg opacity-80 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105"
+                        class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/40 hover:bg-black/80 text-white backdrop-blur-xl border border-white/20 transition duration-200 cursor-pointer shadow-lg opacity-80 sm:opacity-0 group-hover/hero:opacity-100 hover:scale-105"
                         aria-label="Next Slide"
                     >
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -631,130 +492,12 @@ onBeforeUnmount(() => {
                         </svg>
                     </button>
                 </div>
-
-                <!-- DESKTOP FLOATING SEARCH HUB (SHOWN ONLY ON BIG SCREENS lg:) -->
-                <div class="hidden lg:block rounded-3xl bg-white/95 dark:bg-slate-950/90 backdrop-blur-2xl p-4 sm:p-5 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-pink-200/80 dark:border-white/10 ring-1 ring-pink-500/10 space-y-3 shrink-0">
-                    <!-- Top Filter Row: Location Indicator & Service Mode Switcher -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-pink-100/90">
-                        <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-800 flex-wrap">
-                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-100 text-rose-700 text-[10px] shadow-xs">📍</span>
-                            <span>Exploring:</span>
-                            <select
-                                v-model="selectedCity"
-                                class="border border-pink-200/80 py-0.5 pl-2 pr-6 text-xs font-bold text-rose-700 bg-rose-50/90 hover:bg-rose-100 rounded-lg cursor-pointer focus:ring-1 focus:ring-rose-400 transition"
-                            >
-                                <option v-if="selectedCity && (!cities || !cities.some(c => (typeof c === 'object' ? c.name : c) === selectedCity))" :value="selectedCity">
-                                    {{ selectedCity }}
-                                </option>
-                                <option v-for="c in cities" :key="c.id || c" :value="typeof c === 'object' ? c.name : c">{{ typeof c === 'object' ? c.name : c }}</option>
-                                <option v-if="!cities || cities.length === 0" value="Karachi">Karachi</option>
-                            </select>
-                            <button
-                                type="button"
-                                @click="detectLocation"
-                                :disabled="isDetectingLocation"
-                                class="inline-flex items-center gap-1 text-[10px] text-rose-600 hover:text-rose-800 font-bold underline cursor-pointer ml-1 transition disabled:opacity-50"
-                            >
-                                <span v-if="isDetectingLocation" class="inline-block h-2.5 w-2.5 rounded-full border-2 border-rose-600 border-t-transparent animate-spin"></span>
-                                <span v-else class="inline-block h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping"></span>
-                                <span>{{ isDetectingLocation ? 'Locating...' : 'Auto-Detect GPS' }}</span>
-                            </button>
-                        </div>
-
-                        <!-- In-Salon / At-Home Switcher -->
-                        <div class="grid grid-cols-3 sm:flex items-center gap-1 p-1 bg-pink-50/90 rounded-xl border border-pink-200/70 shadow-inner">
-                            <button
-                                type="button"
-                                @click="selectedServiceType = 'all'"
-                                class="px-2.5 sm:px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer text-center"
-                                :class="selectedServiceType === 'all' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
-                            >
-                                ✨ All
-                            </button>
-                            <button
-                                type="button"
-                                @click="selectedServiceType = 'salon'"
-                                class="px-2.5 sm:px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer text-center"
-                                :class="selectedServiceType === 'salon' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
-                            >
-                                💇‍♀️ Salon
-                            </button>
-                            <button
-                                type="button"
-                                @click="selectedServiceType = 'home'"
-                                class="px-2.5 sm:px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer text-center"
-                                :class="selectedServiceType === 'home' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
-                            >
-                                🏠 At-Home
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Search Form with Service & Location Inputs -->
-                    <form @submit.prevent="executeSearch" class="grid gap-2 sm:grid-cols-[1.5fr_1.1fr_auto]">
-                        <!-- Service Search -->
-                        <div class="flex items-center rounded-xl bg-pink-50/50 px-3.5 py-2.5 border border-pink-200/90 focus-within:border-rose-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-rose-500/20 transition-all shadow-xs">
-                            <svg class="h-4 w-4 text-rose-500 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                            <input
-                                v-model="searchTerm"
-                                type="text"
-                                placeholder="Service / Treatment (Bridal, HydraFacial...)"
-                                class="w-full border-0 p-0 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:ring-0 bg-transparent"
-                            />
-                        </div>
-
-                        <!-- City Location Input / Dropdown from Admin -->
-                        <div class="flex items-center rounded-xl bg-pink-50/50 px-3.5 py-2.5 border border-pink-200/90 focus-within:border-rose-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-rose-500/20 transition-all shadow-xs">
-                            <svg class="h-4 w-4 text-rose-500 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            </svg>
-                            <input
-                                v-model="selectedCity"
-                                type="text"
-                                list="cities-list"
-                                placeholder="City (Karachi, Lahore...)"
-                                class="w-full border-0 p-0 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:ring-0 bg-transparent"
-                            />
-                            <datalist id="cities-list">
-                                <option v-for="c in cities" :key="c.id" :value="c.name" />
-                            </datalist>
-                        </div>
-
-                        <!-- Search CTA Button -->
-                        <button
-                            type="submit"
-                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:to-pink-600 px-6 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-lg shadow-pink-900/25 transition-all duration-200 hover:scale-102 cursor-pointer active:scale-95"
-                        >
-                            <span>Search</span>
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                            </svg>
-                        </button>
-                    </form>
-
-                    <!-- Popular Trending Tags Row -->
-                    <div class="flex items-center gap-1.5 flex-wrap pt-1">
-                        <span class="text-[11px] font-bold text-slate-500">Trending:</span>
-                        <button
-                            v-for="tag in trendingTags"
-                            :key="tag.label"
-                            type="button"
-                            @click="quickSearch(tag)"
-                            class="rounded-lg bg-pink-50/80 hover:bg-pink-100 px-2.5 py-1 text-[11px] font-semibold text-rose-700 transition border border-pink-200/60 shadow-2xs hover:scale-102 cursor-pointer"
-                        >
-                            {{ tag.label }}
-                        </button>
-                    </div>
-                </div>
             </div>
 
-            <!-- RIGHT COLUMN: DUAL DYNAMIC LUXURY EDITORIAL SPOTLIGHT CARDS -->
+            <!-- RIGHT COLUMN: DUAL DYNAMIC LUXURY SPOTLIGHT CARDS -->
             <div class="lg:col-span-5 xl:col-span-4 grid sm:grid-cols-2 lg:grid-cols-1 gap-3.5 sm:gap-4">
-                <!-- PORTION 2: TOP SPOTLIGHT (ADMIN RIGHT-TOP BANNER OR DYNAMIC PRODUCT) -->
-                <div class="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-pink-500/20 bg-[#0c0612] min-h-[14rem] sm:min-h-[15.5rem] lg:min-h-[16rem] xl:min-h-[17rem] flex flex-col justify-between group select-none">
-                    <!-- Full-Bleed Image Background Link -->
+                <!-- PORTION 2: TOP SPOTLIGHT (RIGHT-TOP BANNER OR DYNAMIC PRODUCT) -->
+                <div class="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-pink-500/20 bg-[#0c0612] min-h-[14rem] sm:min-h-[15.5rem] lg:min-h-[16rem] xl:min-h-[16.2rem] flex flex-col justify-between group select-none">
                     <Link
                         :href="resolveLink(rightTopBanner?.link || activeProduct?.target_url)"
                         class="absolute inset-0 overflow-hidden cursor-pointer block"
@@ -765,16 +508,15 @@ onBeforeUnmount(() => {
                             class="h-full w-full object-cover object-center transform transition-transform duration-7000 ease-out group-hover:scale-108"
                             loading="lazy"
                         />
-                        <!-- Directional Top & Bottom Dark Edge Shading (Keeps center 80% clear) -->
                         <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/50 pointer-events-none"></div>
                     </Link>
 
-                    <!-- Top Row: Tag & Price Tag & Micro Dots -->
+                    <!-- Top Row: Tag & Price -->
                     <div class="relative z-10 p-3.5 sm:p-4 flex items-center justify-between gap-2 pointer-events-auto">
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="inline-flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-xl px-2.5 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-pink-200 border border-pink-500/30 shadow-md">
                                 <span class="text-rose-400">✨</span>
-                                <span>{{ rightTopBanner ? 'Special Promo' : (activeProduct.is_trending ? '🔥 Trending' : 'Featured') }}</span>
+                                <span>{{ rightTopBanner ? 'Special Deal' : (activeProduct.is_trending ? '🔥 Trending' : 'Top Pick') }}</span>
                             </span>
                             <span v-if="!rightTopBanner && activeProduct.rating" class="inline-flex items-center gap-0.5 rounded-full bg-black/60 backdrop-blur-xl px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-white/20 shadow-xs">
                                 <span>★</span>
@@ -786,21 +528,10 @@ onBeforeUnmount(() => {
                             <span v-if="rightTopBanner?.price || activeProduct?.price" class="inline-flex items-center px-2 py-0.5 rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 text-white font-serif text-xs sm:text-sm font-extrabold shadow-sm border border-white/20">
                                 {{ formatPrice(rightTopBanner?.price || activeProduct?.price) }}
                             </span>
-                            <!-- Product pagination dots when in fallback mode -->
-                            <div v-if="!rightTopBanner && displayProducts.length > 1" class="hidden sm:flex items-center gap-1 bg-black/50 backdrop-blur-md px-2 py-1 rounded-full border border-white/20">
-                                <button
-                                    v-for="(p, idx) in displayProducts"
-                                    :key="p.id"
-                                    @click.stop="currentProductIndex = idx"
-                                    class="h-1 rounded-full transition-all duration-300 cursor-pointer"
-                                    :class="currentProductIndex === idx ? 'w-3.5 bg-rose-400' : 'w-1 bg-white/40 hover:bg-white/80'"
-                                    :aria-label="`Product ${idx + 1}`"
-                                />
-                            </div>
                         </div>
                     </div>
 
-                    <!-- Bottom Action Strip: Title, Subtitle & Direct Action -->
+                    <!-- Bottom Action Strip -->
                     <div class="relative z-10 p-3.5 sm:p-4 pt-2 border-t border-white/15 backdrop-blur-xs flex items-end justify-between gap-3 pointer-events-auto">
                         <div class="space-y-0.5 max-w-[72%] text-left">
                             <h4 class="font-serif text-sm sm:text-base font-bold text-white leading-tight drop-shadow-md line-clamp-1">
@@ -820,198 +551,63 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
 
-                <!-- PORTION 3: BOTTOM SPOTLIGHT (ADMIN RIGHT-BOTTOM BANNER OR DYNAMIC SALON SERVICE) -->
-                <div class="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-pink-500/20 bg-[#0c0612] min-h-[14rem] sm:min-h-[15.5rem] lg:min-h-[16rem] xl:min-h-[17rem] flex flex-col justify-between group select-none">
-                    <!-- Full-Bleed Image Background Link -->
+                <!-- PORTION 3: BOTTOM SPOTLIGHT (RIGHT-BOTTOM BANNER OR SECOND DYNAMIC PRODUCT) -->
+                <div class="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-pink-500/20 bg-[#0c0612] min-h-[14rem] sm:min-h-[15.5rem] lg:min-h-[16rem] xl:min-h-[16.2rem] flex flex-col justify-between group select-none">
                     <Link
-                        :href="resolveLink(rightBottomBanner?.link || activeService?.target_url)"
+                        :href="resolveLink(rightBottomBanner?.link || activeSecondaryProduct?.target_url)"
                         class="absolute inset-0 overflow-hidden cursor-pointer block"
                     >
                         <img
-                            :src="rightBottomBanner?.image || activeService.image"
-                            :alt="rightBottomBanner?.title || activeService.name"
+                            :src="rightBottomBanner?.image || activeSecondaryProduct.image"
+                            :alt="rightBottomBanner?.title || activeSecondaryProduct.name"
                             class="h-full w-full object-cover object-center transform transition-transform duration-7000 ease-out group-hover:scale-108"
                             loading="lazy"
                         />
-                        <!-- Directional Top & Bottom Dark Edge Shading (Keeps center 80% clear) -->
                         <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/50 pointer-events-none"></div>
                     </Link>
 
-                    <!-- Top Row: Tag, Price & Live Artist Status -->
+                    <!-- Top Row: Tag & Price -->
                     <div class="relative z-10 p-3.5 sm:p-4 flex items-center justify-between gap-2 pointer-events-auto">
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="inline-flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-xl px-2.5 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-pink-200 border border-pink-500/30 shadow-md">
-                                <span class="text-rose-400">✨</span>
-                                <span>{{ rightBottomBanner ? 'Studio Offer' : (activeService.is_featured ? '⭐ Featured' : 'Top Service') }}</span>
+                                <span class="text-rose-400">💎</span>
+                                <span>{{ rightBottomBanner ? 'Best Seller' : 'Exclusive Offer' }}</span>
                             </span>
-                            <span v-if="!rightBottomBanner && activeService.artist" class="inline-flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-xl px-2 py-0.5 text-[10px] font-bold text-pink-200 border border-white/20 shadow-xs">
+                            <span v-if="!rightBottomBanner && activeSecondaryProduct.brand" class="inline-flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-xl px-2 py-0.5 text-[10px] font-bold text-pink-200 border border-white/20 shadow-xs">
                                 <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                <span class="truncate max-w-[90px]">{{ activeService.artist.business_name || activeService.artist.name }}</span>
+                                <span class="truncate max-w-[100px]">{{ activeSecondaryProduct.brand }}</span>
                             </span>
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <span v-if="rightBottomBanner?.price || activeService?.price" class="inline-flex items-center px-2 py-0.5 rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 text-white font-serif text-xs sm:text-sm font-extrabold shadow-sm border border-white/20">
-                                {{ formatPrice(rightBottomBanner?.price || activeService?.price) }}
+                            <span v-if="rightBottomBanner?.price || activeSecondaryProduct?.price" class="inline-flex items-center px-2 py-0.5 rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 text-white font-serif text-xs sm:text-sm font-extrabold shadow-sm border border-white/20">
+                                {{ formatPrice(rightBottomBanner?.price || activeSecondaryProduct?.price) }}
                             </span>
-                            <!-- Service pagination dots when in fallback mode -->
-                            <div v-if="!rightBottomBanner && displayServices.length > 1" class="hidden sm:flex items-center gap-1 bg-black/50 backdrop-blur-md px-2 py-1 rounded-full border border-white/20">
-                                <button
-                                    v-for="(s, idx) in displayServices"
-                                    :key="s.id"
-                                    @click.stop="currentServiceIndex = idx"
-                                    class="h-1 rounded-full transition-all duration-300 cursor-pointer"
-                                    :class="currentServiceIndex === idx ? 'w-3.5 bg-pink-400' : 'w-1 bg-white/40 hover:bg-white/80'"
-                                    :aria-label="`Service ${idx + 1}`"
-                                />
-                            </div>
                         </div>
                     </div>
 
-                    <!-- Bottom Action Strip: Title, Subtitle & Direct Action -->
+                    <!-- Bottom Action Strip -->
                     <div class="relative z-10 p-3.5 sm:p-4 pt-2 border-t border-white/15 backdrop-blur-xs flex items-end justify-between gap-3 pointer-events-auto">
                         <div class="space-y-0.5 max-w-[72%] text-left">
                             <h4 class="font-serif text-sm sm:text-base font-bold text-white leading-tight drop-shadow-md line-clamp-1">
-                                {{ rightBottomBanner?.title || activeService.name }}
+                                {{ rightBottomBanner?.title || activeSecondaryProduct.name }}
                             </h4>
                             <p class="text-[10px] sm:text-[11px] text-pink-100/90 line-clamp-1 leading-normal font-normal drop-shadow-xs">
-                                {{ rightBottomBanner?.description || activeService.description }}
+                                {{ rightBottomBanner?.description || activeSecondaryProduct.description }}
                             </p>
                         </div>
                         <Link
-                            :href="resolveLink(rightBottomBanner?.link || activeService?.target_url)"
+                            :href="resolveLink(rightBottomBanner?.link || activeSecondaryProduct?.target_url)"
                             class="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white px-3.5 py-1.5 text-xs font-bold shadow-md hover:scale-102 transition-all shrink-0 cursor-pointer"
                         >
-                            <span>{{ rightBottomBanner?.button_text || 'Book' }}</span>
+                            <span>{{ rightBottomBanner?.button_text || 'Shop' }}</span>
                             <span>&rarr;</span>
                         </Link>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- MOBILE FLOATING SEARCH HUB (SHOWN ONLY ON MOBILE SCREENS < lg, SITS BELOW ALL CAROUSELS) -->
-        <div class="block lg:hidden mt-3.5 sm:mt-4 rounded-3xl bg-white/95 dark:bg-slate-950/90 backdrop-blur-2xl p-4 sm:p-5 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-pink-200/80 dark:border-white/10 ring-1 ring-pink-500/10 space-y-3 shrink-0">
-            <!-- Top Filter Row: Location Indicator & Service Mode Switcher -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-pink-100/90">
-                <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-800 flex-wrap">
-                    <span class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-100 text-rose-700 text-[10px] shadow-xs">📍</span>
-                    <span>Exploring:</span>
-                    <select
-                        v-model="selectedCity"
-                        class="border border-pink-200/80 py-0.5 pl-2 pr-6 text-xs font-bold text-rose-700 bg-rose-50/90 hover:bg-rose-100 rounded-lg cursor-pointer focus:ring-1 focus:ring-rose-400 transition"
-                    >
-                        <option v-if="selectedCity && (!cities || !cities.some(c => (typeof c === 'object' ? c.name : c) === selectedCity))" :value="selectedCity">
-                            {{ selectedCity }}
-                        </option>
-                        <option v-for="c in cities" :key="c.id || c" :value="typeof c === 'object' ? c.name : c">{{ typeof c === 'object' ? c.name : c }}</option>
-                        <option v-if="!cities || cities.length === 0" value="Karachi">Karachi</option>
-                    </select>
-                    <button
-                        type="button"
-                        @click="detectLocation"
-                        :disabled="isDetectingLocation"
-                        class="inline-flex items-center gap-1 text-[10px] text-rose-600 hover:text-rose-800 font-bold underline cursor-pointer ml-1 transition disabled:opacity-50"
-                    >
-                        <span v-if="isDetectingLocation" class="inline-block h-2.5 w-2.5 rounded-full border-2 border-rose-600 border-t-transparent animate-spin"></span>
-                        <span v-else class="inline-block h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping"></span>
-                        <span>{{ isDetectingLocation ? 'Locating...' : 'Auto-Detect GPS' }}</span>
-                    </button>
-                </div>
-
-                <!-- In-Salon / At-Home Switcher -->
-                <div class="grid grid-cols-3 sm:flex items-center gap-1 p-1 bg-pink-50/90 rounded-xl border border-pink-200/70 shadow-inner">
-                    <button
-                        type="button"
-                        @click="selectedServiceType = 'all'"
-                        class="px-2.5 sm:px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer text-center"
-                        :class="selectedServiceType === 'all' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
-                    >
-                        ✨ All
-                    </button>
-                    <button
-                        type="button"
-                        @click="selectedServiceType = 'salon'"
-                        class="px-2.5 sm:px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer text-center"
-                        :class="selectedServiceType === 'salon' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
-                    >
-                        💇‍♀️ Salon
-                    </button>
-                    <button
-                        type="button"
-                        @click="selectedServiceType = 'home'"
-                        class="px-2.5 sm:px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer text-center"
-                        :class="selectedServiceType === 'home' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
-                    >
-                        🏠 At-Home
-                    </button>
-                </div>
-            </div>
-
-            <!-- Search Form with Service & Location Inputs -->
-            <form @submit.prevent="executeSearch" class="grid gap-2 sm:grid-cols-[1.5fr_1.1fr_auto]">
-                <!-- Service Search -->
-                <div class="flex items-center rounded-xl bg-pink-50/50 px-3.5 py-2.5 border border-pink-200/90 focus-within:border-rose-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-rose-500/20 transition-all shadow-xs">
-                    <svg class="h-4 w-4 text-rose-500 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    <input
-                        v-model="searchTerm"
-                        type="text"
-                        placeholder="Service / Treatment (Bridal, HydraFacial...)"
-                        class="w-full border-0 p-0 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:ring-0 bg-transparent"
-                    />
-                </div>
-
-                <!-- City Location Input / Dropdown from Admin -->
-                <div class="flex items-center rounded-xl bg-pink-50/50 px-3.5 py-2.5 border border-pink-200/90 focus-within:border-rose-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-rose-500/20 transition-all shadow-xs">
-                    <svg class="h-4 w-4 text-rose-500 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                    </svg>
-                    <input
-                        v-model="selectedCity"
-                        type="text"
-                        list="cities-list-mobile"
-                        placeholder="City (Karachi, Lahore...)"
-                        class="w-full border-0 p-0 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:ring-0 bg-transparent"
-                    />
-                    <datalist id="cities-list-mobile">
-                        <option v-for="c in cities" :key="c.id" :value="c.name" />
-                    </datalist>
-                </div>
-
-                <!-- Search CTA Button -->
-                <button
-                    type="submit"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:to-pink-600 px-6 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-lg shadow-pink-900/25 transition-all duration-200 hover:scale-102 cursor-pointer active:scale-95"
-                >
-                    <span>Search</span>
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                    </svg>
-                </button>
-            </form>
-
-            <!-- Popular Trending Tags Row -->
-            <div class="flex items-center gap-1.5 flex-wrap pt-1">
-                <span class="text-[11px] font-bold text-slate-500">Trending:</span>
-                <button
-                    v-for="tag in trendingTags"
-                    :key="tag.label"
-                    type="button"
-                    @click="quickSearch(tag)"
-                    class="rounded-lg bg-pink-50/80 hover:bg-pink-100 px-2.5 py-1 text-[11px] font-semibold text-rose-700 transition border border-pink-200/60 shadow-2xs hover:scale-102 cursor-pointer"
-                >
-                    {{ tag.label }}
-                </button>
-            </div>
-        </div>
-
-        <!-- ========================================================================= -->
-        <!-- 4. APPROVED PRODUCTS STRIP (SLIDING FROM RIGHT TO LEFT)                   -->
-        <!-- ========================================================================= -->
         <div class="mt-2.5 sm:mt-4 rounded-xl sm:rounded-3xl p-1.5 sm:p-4 bg-white/90 backdrop-blur-xl border border-rose-100/80 shadow-xs overflow-hidden relative group/strip">
-            <!-- Header Strip -->
             <div class="flex items-center justify-between gap-2 mb-1.5 sm:mb-2 px-1">
                 <div class="flex items-center gap-1 sm:gap-2">
                     <span class="flex h-4 w-4 sm:h-6 sm:w-6 items-center justify-center rounded-md sm:rounded-lg bg-rose-500/10 text-rose-600 text-[9px] sm:text-xs font-black">
@@ -1021,7 +617,7 @@ onBeforeUnmount(() => {
                         <span>Boutique-Best Products</span>
                         <span class="inline-flex items-center gap-0.5 sm:gap-1 text-[7px] sm:text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1 sm:px-2 py-0.5 rounded-full border border-emerald-200/60">
                             <span class="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Best
+                            100% Genuine
                         </span>
                     </h3>
                 </div>
@@ -1035,11 +631,11 @@ onBeforeUnmount(() => {
                 </Link>
             </div>
 
-            <!-- Left & Right Luxury Gradient Fade Masks -->
+            <!-- Left & Right Gradient Fade Masks -->
             <div class="pointer-events-none absolute left-0 top-6 sm:top-8 bottom-0 w-3 sm:w-12 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
             <div class="pointer-events-none absolute right-0 top-6 sm:top-8 bottom-0 w-3 sm:w-12 bg-gradient-to-l from-white via-white/80 to-transparent z-10"></div>
 
-            <!-- Sliding Products Track -->
+            <!-- Sliding Track -->
             <div class="overflow-hidden py-0.5">
                 <div 
                     :class="shouldAnimateMarquee ? 'animate-marquee-left flex items-center gap-1.5 sm:gap-3 w-max' : 'flex flex-nowrap items-center gap-1.5 sm:gap-3 overflow-x-auto scrollbar-none'"
@@ -1050,7 +646,6 @@ onBeforeUnmount(() => {
                         class="w-44 sm:w-68 shrink-0 p-1.5 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white border border-rose-100/80 hover:border-rose-300 shadow-2xs hover:shadow-md transition-all duration-300 flex items-center gap-1.5 sm:gap-2.5 group/card cursor-pointer relative overflow-hidden"
                         @click="router.visit(product.target_url)"
                     >
-                        <!-- Product Image with Badge -->
                         <div class="relative h-10 w-10 sm:h-14 sm:w-14 rounded-lg sm:rounded-xl overflow-hidden bg-slate-50 shrink-0 border border-slate-100">
                             <img
                                 :src="product.image"
@@ -1066,7 +661,6 @@ onBeforeUnmount(() => {
                             </span>
                         </div>
 
-                        <!-- Product Info & Inside Action Button -->
                         <div class="min-w-0 flex-1 flex flex-col justify-between space-y-0.5">
                             <div class="flex items-center justify-between gap-1">
                                 <span class="text-[7px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-wider truncate">
@@ -1094,7 +688,6 @@ onBeforeUnmount(() => {
                                     </span>
                                 </div>
 
-                                <!-- Button Nested Cleanly Inside Card -->
                                 <button
                                     type="button"
                                     @click.stop="addProductToBag(product, $event)"

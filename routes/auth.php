@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\ArtistRegistrationController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -17,12 +16,6 @@ Route::middleware('guest')->group(function () {
         ->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
-
-    Route::get('artist/register', [ArtistRegistrationController::class, 'create'])
-        ->name('artist.register');
-
-    Route::post('artist/register', [ArtistRegistrationController::class, 'store'])
-        ->name('artist.register.store');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');

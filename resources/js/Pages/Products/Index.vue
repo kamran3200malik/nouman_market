@@ -142,7 +142,7 @@ const addToCart = (product, quantity = 1) => {
             price: parseFloat(product.price) || 0,
             original_price: parseFloat(product.original_price) || parseFloat(product.price) || 0,
             image: product.image_url || product.image,
-            brand: product.brand || 'Salon Pro',
+            brand: product.brand || 'Luxe Care',
             category: product.category,
             quantity: quantity,
             in_stock: product.in_stock !== false
@@ -567,19 +567,19 @@ const handleOrderSubmit = async () => {
 
 // WhatsApp Direct 1-Click Order Link Generator
 const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
-    const phoneNumber = '923001234567'; // Salon Marketplace official hotline
+    const phoneNumber = '923001234567'; // Luxe Marketplace official hotline
     let text = '';
 
     if (product) {
-        text = `Salam! I would like to order this salon product from BeautyBook Luxe:%0A%0A` +
+        text = `Salam! I would like to order this beauty product from Luxe Market:%0A%0A` +
             `*Product:* ${encodeURIComponent(product.name)}%0A` +
-            `*Brand:* ${encodeURIComponent(product.brand || 'Salon Pro')}%0A` +
+            `*Brand:* ${encodeURIComponent(product.brand || 'Luxe Care')}%0A` +
             `*Quantity:* ${quantity}%0A` +
             `*Price:* PKR ${(product.price * quantity).toLocaleString()}%0A%0A` +
             `Please confirm availability and delivery details. Thank you!`;
     } else {
         if (cart.value.length === 0) return '#';
-        text = `Salam! I would like to place an order for the following items from BeautyBook Luxe:%0A%0A`;
+        text = `Salam! I would like to place an order for the following items from Luxe Market:%0A%0A`;
         cart.value.forEach((item, idx) => {
             text += `${idx + 1}. *${encodeURIComponent(item.name)}* x ${item.quantity} = PKR ${(item.price * item.quantity).toLocaleString()}%0A`;
         });
@@ -596,8 +596,8 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
 <template>
     <PublicLayout>
         <Head>
-            <title>Salon-Grade Beauty, Haircare & Bridal Essentials | BeautyBook Luxe Store</title>
-            <meta name="description" content="Shop 100% original salon-grade hair serums, skin glow elixirs, organic bridal henna, keratin treatments, and beauty tools in Pakistan." />
+            <title>100% Genuine Cosmetics, Skincare & Haircare | Luxe Beauty Market</title>
+            <meta name="description" content="Shop 100% authentic luxury cosmetics, clinical skincare, French perfumes, organic hair care, and beauty tools in Pakistan with fast nationwide delivery." />
         </Head>
 
         <!-- Floating Cart Toggle Button -->
@@ -655,13 +655,13 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                         <div class="max-w-2xl text-center md:text-left space-y-3">
                             <div class="inline-flex items-center gap-2 rounded-full bg-rose-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-rose-300 border border-rose-500/30">
                                 <span class="h-1.5 w-1.5 rounded-full bg-rose-400 animate-ping"></span>
-                                100% Certified Salon-Grade Marketplace
+                                100% Certified Genuine Marketplace
                             </div>
                             <h1 class="font-serif text-3xl sm:text-5xl font-normal tracking-tight text-white">
-                                Professional Beauty, Hair & Bridal Vault
+                                Luxury Cosmetics, Skincare & Fragrance Vault
                             </h1>
                             <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
-                                Curated authentic formulas straight from elite salons: pure argan oils, dermal hyaluronic serums, triple-filtered Rajasthani organic mehndi, and pro tools.
+                                Curated authentic formulas from world-renowned beauty brands: pure botanical oils, dermal hyaluronic serums, French perfumes, and professional beauty essentials.
                             </p>
                         </div>
 
@@ -684,12 +684,12 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                         </div>
                     </div>
 
-                    <!-- Redesigned Spotlight & Trending Salon Picks Strip -->
+                    <!-- Redesigned Spotlight & Trending Beauty Picks Strip -->
                     <div v-if="trendingProducts && trendingProducts.length > 0" class="mt-6 pt-5 border-t border-white/10 relative">
                         <div class="flex items-center justify-between gap-2 mb-3">
                             <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-300">
                                 <span class="animate-pulse">🔥</span>
-                                <span>Trending Salon Favorites</span>
+                                <span>Trending Beauty Favorites</span>
                             </div>
                             <span class="text-[11px] text-slate-400 font-medium hidden sm:inline">Tap to quick view</span>
                         </div>
@@ -912,7 +912,7 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                 <div v-if="isFiltering" class="flex items-center justify-center py-10">
                     <div class="flex items-center gap-3 rounded-2xl bg-white px-6 py-4 shadow-lg border border-slate-100">
                         <div class="h-5 w-5 animate-spin rounded-full border-2 border-rose-600 border-t-transparent"></div>
-                        <span class="text-sm font-semibold text-slate-700">Refining salon products...</span>
+                        <span class="text-sm font-semibold text-slate-700">Refining beauty catalog...</span>
                     </div>
                 </div>
 
@@ -983,7 +983,7 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                             <div class="mt-4 space-y-2 flex-1">
                                 <div class="flex items-center justify-between text-[11px] font-semibold text-slate-400">
                                     <span class="uppercase tracking-wider text-rose-600 font-bold truncate max-w-[60%]">
-                                        {{ product.brand || 'Salon Pro' }}
+                                        {{ product.brand || 'Luxe Care' }}
                                     </span>
                                     <span class="flex items-center gap-1 text-amber-500 shrink-0">
                                         ★ {{ parseFloat(product.rating || 4.9).toFixed(1) }}
@@ -1004,7 +1004,7 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                                 </h3>
 
                                 <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                                    {{ product.description || 'Salon-exclusive formula with active botanical nourishment.' }}
+                                    {{ product.description || 'Premium dermatologically tested formula with active botanical nourishment.' }}
                                 </p>
 
                                 <!-- Features chips if available -->
@@ -1068,7 +1068,7 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                             <!-- Middle Details -->
                             <div class="flex-1 space-y-2 text-center sm:text-left">
                                 <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-xs">
-                                    <span class="font-bold uppercase tracking-wider text-rose-600">{{ product.brand || 'Salon Pro' }}</span>
+                                    <span class="font-bold uppercase tracking-wider text-rose-600">{{ product.brand || 'Luxe Care' }}</span>
                                     <span class="text-slate-300">•</span>
                                     <span class="text-slate-500 font-medium">{{ product.category }}</span>
                                     <span class="text-slate-300">•</span>
@@ -1161,7 +1161,7 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                         No Matching Beauty Products Found
                     </h3>
                     <p class="text-sm text-slate-500 leading-relaxed">
-                        We couldn't find any salon items matching your current search parameters. Try broadening your keywords or clearing active filters.
+                        We couldn't find any items matching your current search parameters. Try broadening your keywords or clearing active filters.
                     </p>
                     <div class="pt-2">
                         <button
@@ -1274,9 +1274,9 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                                 </div>
 
                                 <!-- How to use / Instructions -->
-                                <div v-if="quickViewProduct.usage_instructions" class="rounded-2xl bg-amber-50/60 p-3 text-xs text-amber-900 border border-amber-200/60">
-                                    <span class="font-bold block mb-0.5">💡 Salon Application Tip:</span>
-                                    {{ quickViewProduct.usage_instructions }}
+                                <div v-if="quickViewProduct.how_to_use" class="rounded-2xl bg-amber-50/60 p-3 text-xs text-amber-900 border border-amber-200/60">
+                                    <span class="font-bold block mb-0.5">💡 Application Guide & Directions:</span>
+                                    {{ quickViewProduct.how_to_use }}
                                 </div>
 
                                 <!-- Quantity & Action Buttons -->
@@ -1385,7 +1385,7 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                                 <div v-if="cart.length === 0" class="text-center py-16 space-y-3">
                                     <span class="text-4xl block">🛍️</span>
                                     <h4 class="font-serif text-base font-bold text-slate-800">Your bag is currently empty</h4>
-                                    <p class="text-xs text-slate-400">Explore our salon catalog and add premium beauty essentials.</p>
+                                    <p class="text-xs text-slate-400">Explore our beauty catalog and add luxury cosmetics & skincare.</p>
                                     <button
                                         @click="isCartOpen = false"
                                         type="button"
@@ -1559,7 +1559,7 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                                     Order #{{ createdOrder?.order_number || 'Confirmed' }}
                                 </h3>
                                 <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-                                    Thank you, <strong class="text-slate-800">{{ createdOrder?.customer_name || checkoutForm.fullName }}</strong>! Your salon product parcel has been dispatched to our logistics carrier for fast delivery in <span class="font-semibold text-rose-600">{{ createdOrder?.city || checkoutForm.city }}</span>.
+                                    Thank you, <strong class="text-slate-800">{{ createdOrder?.customer_name || checkoutForm.fullName }}</strong>! Your beauty parcel has been dispatched to our logistics carrier for fast delivery in <span class="font-semibold text-rose-600">{{ createdOrder?.city || checkoutForm.city }}</span>.
                                 </p>
                             </div>
 
@@ -1955,7 +1955,7 @@ const generateWhatsAppOrderLink = (product = null, quantity = 1) => {
                                     <span>{{ isSubmittingOrder ? 'Placing Order...' : `Confirm Order & Dispatch • ${formatPrice(cartTotal)}` }}</span>
                                 </button>
                                 <div class="flex items-center justify-center gap-3 text-[10px] text-slate-400 font-semibold pt-0.5">
-                                    <span>🛡️ Genuine Salon Guarantee</span>
+                                    <span>🛡️ 100% Original Guarantee</span>
                                     <span>•</span>
                                     <span>🚚 {{ shippingSettings.carrier_name }}</span>
                                 </div>

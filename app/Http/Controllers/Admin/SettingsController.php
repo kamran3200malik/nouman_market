@@ -19,58 +19,50 @@ class SettingsController extends Controller
 
         $defaults = [
             // General & Branding
-            'site_name' => 'Glamora Beauty & Salon Marketplace',
-            'site_tagline' => 'Luxury Salon, Spa & Bridal Appointments Across Pakistan',
-            'site_description' => 'Pakistan\'s premier beauty marketplace connecting verified salons, makeup artists, and clients for seamless appointment bookings.',
-            'contact_email' => 'support@glamora.pk',
+            'site_name' => 'Luxe Beauty Market',
+            'site_tagline' => '100% Genuine Cosmetics & Skincare Marketplace',
+            'site_description' => 'Pakistan\'s premier multi-brand cosmetics and skincare marketplace delivering authentic, batch-verified beauty products nationwide.',
+            'contact_email' => 'support@luxemarket.pk',
             'contact_phone' => '+92 (300) 123-4567',
             'support_whatsapp' => '+923001234567',
-            'office_address' => 'Suite 402, Luxury Commercial Hub, Gulberg III, Lahore, Pakistan',
+            'office_address' => 'Floor 3, Luxury Plaza, MM Alam Road, Gulberg III, Lahore, Pakistan',
             'currency_code' => 'PKR',
             'currency_symbol' => 'PKR',
             'timezone' => 'Asia/Karachi',
 
-            // Monetization & Fees
-            'commission_rate' => '10',
-            'subscription_monthly_fee' => '3000',
-            'subscription_grace_days' => '3',
-            'min_payout_threshold' => '5000',
-            'tax_percentage' => '0',
-
-            // Shipping & Logistics (Cosmetics & Merchandise Marketplace)
+            // Shipping & Logistics
             'shipping_fee_standard' => '250',
-            'shipping_free_threshold' => '3000',
+            'shipping_free_threshold' => '5000',
             'shipping_free_enabled' => '1',
-            'shipping_carrier_name' => 'Standard Express Beauty Courier',
+            'shipping_carrier_name' => 'TCS / Leopard Express',
             'shipping_estimated_days' => '2 - 4 Business Days',
-
-            // Booking Policies
-            'max_advance_booking_days' => '30',
-            'min_booking_notice_hours' => '2',
-            'cancellation_cutoff_hours' => '6',
-            'auto_confirm_bookings' => '1',
+            'cash_on_delivery_enabled' => '1',
+            'online_payment_enabled' => '1',
+            'tax_percentage' => '0',
             'allow_customer_reviews' => '1',
 
             // Notifications
-            'email_booking_notifications' => '1',
+            'email_order_notifications' => '1',
             'sms_whatsapp_notifications' => '1',
-            'admin_new_salon_alerts' => '1',
+            'admin_new_order_alerts' => '1',
 
             // Social Channels
-            'social_instagram' => 'https://instagram.com/glamora.pk',
-            'social_facebook' => 'https://facebook.com/glamora.pk',
-            'social_tiktok' => 'https://tiktok.com/@glamora.pk',
+            'social_instagram' => 'https://instagram.com/luxemarket.pk',
+            'social_facebook' => 'https://facebook.com/luxemarket.pk',
+            'social_tiktok' => 'https://tiktok.com/@luxemarket.pk',
+            'social_youtube' => '',
+
             // SEO & Search Indexing
-            'seo_meta_title' => 'BeautyBook Luxe - Premier Salon Marketplace & Beauty CRM',
-            'seo_meta_description' => 'Discover and book verified luxury salons, certified makeup artists, bridal packages, and professional beauty essentials across Pakistan.',
-            'seo_meta_keywords' => 'salon booking pakistan, bridal makeup lahore, beauty parlor karachi, makeup artists islamabad, beauty products online, salon appointments',
+            'seo_meta_title' => 'Luxe Beauty Market - Authentic Cosmetics, Skincare & Perfumes',
+            'seo_meta_description' => 'Shop 100% original skincare, cosmetics, makeup, haircare and luxury fragrances with fast delivery across Pakistan.',
+            'seo_meta_keywords' => 'cosmetics pakistan, skincare lahore, makeup online karachi, original perfumes, beauty shop pakistan',
             'seo_google_analytics' => '',
             'seo_google_verification' => '',
             'seo_index_enabled' => '1',
 
             // System
             'maintenance_mode' => '0',
-            'maintenance_message' => 'We are undergoing scheduled luxury beauty platform upgrades. We will be back online shortly.',
+            'maintenance_message' => 'We are undergoing scheduled platform upgrades. We will be back online shortly.',
         ];
 
         $settings = array_merge($defaults, $allSettings);

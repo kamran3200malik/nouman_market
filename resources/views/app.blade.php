@@ -7,26 +7,26 @@
         <title inertia>{{ config('app.name', 'BeautyBook Luxe') }}</title>
 
         <!-- Primary SEO Meta Tags -->
-        <meta name="title" content="{{ config('app.name', 'BeautyBook Luxe') }} - Premier Salon Marketplace & Beauty CRM">
-        <meta name="description" content="Discover and book verified luxury salons, certified makeup artists, bridal packages, and professional beauty essentials across Pakistan.">
-        <meta name="keywords" content="salon booking pakistan, bridal makeup lahore, beauty parlor karachi, makeup artists islamabad, beauty products online, salon appointments">
-        <meta name="author" content="{{ config('app.name', 'BeautyBook Luxe') }}">
+        <meta name="title" content="{{ config('app.name', 'Luxe Beauty Market') }} - 100% Genuine Cosmetics & Skincare Marketplace">
+        <meta name="description" content="Discover 100% original cosmetics, clinical skincare, French fragrances, and haircare essentials in Pakistan with fast nationwide delivery.">
+        <meta name="keywords" content="cosmetics pakistan, original skincare lahore, makeup karachi, luxury perfumes islamabad, beauty products online, original cosmetics buy">
+        <meta name="author" content="{{ config('app.name', 'Luxe Beauty Market') }}">
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
         <!-- Open Graph / Facebook / WhatsApp Meta Tags -->
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:title" content="{{ config('app.name', 'BeautyBook Luxe') }} - Premier Salon Marketplace & Beauty CRM">
-        <meta property="og:description" content="Discover and book verified luxury salons, certified makeup artists, bridal packages, and professional beauty essentials across Pakistan.">
+        <meta property="og:title" content="{{ config('app.name', 'Luxe Beauty Market') }} - 100% Genuine Cosmetics & Skincare Marketplace">
+        <meta property="og:description" content="Discover 100% original cosmetics, clinical skincare, French fragrances, and haircare essentials in Pakistan with fast nationwide delivery.">
         <meta property="og:image" content="{{ asset('images/og-share-card.jpg') }}">
-        <meta property="og:site_name" content="{{ config('app.name', 'BeautyBook Luxe') }}">
+        <meta property="og:site_name" content="{{ config('app.name', 'Luxe Beauty Market') }}">
         <meta property="og:locale" content="en_US">
 
         <!-- Twitter Card Meta Tags -->
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:url" content="{{ url()->current() }}">
-        <meta name="twitter:title" content="{{ config('app.name', 'BeautyBook Luxe') }} - Premier Salon Marketplace & Beauty CRM">
-        <meta name="twitter:description" content="Discover and book verified luxury salons, certified makeup artists, bridal packages, and professional beauty essentials across Pakistan.">
+        <meta name="twitter:title" content="{{ config('app.name', 'Luxe Beauty Market') }} - 100% Genuine Cosmetics & Skincare Marketplace">
+        <meta name="twitter:description" content="Discover 100% original cosmetics, clinical skincare, French fragrances, and haircare essentials in Pakistan with fast nationwide delivery.">
         <meta name="twitter:image" content="{{ asset('images/og-share-card.jpg') }}">
 
         <!-- Favicon & App Icons -->
@@ -57,13 +57,13 @@
                     '@type' => 'WebSite',
                     '@id' => url('/') . '/#website',
                     'url' => url('/'),
-                    'name' => config('app.name', 'BeautyBook Luxe'),
-                    'description' => "Pakistan's premier beauty marketplace connecting verified salons, makeup artists, and clients for seamless appointment bookings.",
+                    'name' => config('app.name', 'Luxe Beauty Market'),
+                    'description' => "Pakistan's premier multi-brand luxury cosmetics and skincare marketplace delivering original, verified beauty essentials to your doorstep.",
                     'potentialAction' => [
                         '@type' => 'SearchAction',
                         'target' => [
                             '@type' => 'EntryPoint',
-                            'urlTemplate' => url('/services') . '?search={search_term_string}',
+                            'urlTemplate' => url('/products') . '?search={search_term_string}',
                         ],
                         'query-input' => 'required name=search_term_string',
                     ],

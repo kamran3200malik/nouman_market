@@ -460,11 +460,11 @@ const getCategoryImageUrl = (category) => {
 
                 <div class="col-span-2 sm:col-span-1 rounded-2xl bg-white p-4.5 shadow-sm border border-slate-200/80 hover:border-slate-300 transition-all">
                     <div class="flex items-center justify-between">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Linked Services</p>
-                        <span class="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600 text-xs">💅</span>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Linked Products</p>
+                        <span class="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600 text-xs">🛍️</span>
                     </div>
-                    <p class="text-2xl font-black text-rose-600 mt-1.5">{{ stats?.total_services ?? 0 }}</p>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Active salon listings</p>
+                    <p class="text-2xl font-black text-rose-600 mt-1.5">{{ stats?.total_products ?? stats?.total_services ?? 0 }}</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Active catalog listings</p>
                 </div>
             </div>
 
@@ -1108,7 +1108,7 @@ const getCategoryImageUrl = (category) => {
                             <textarea
                                 v-model="form.description"
                                 rows="3"
-                                placeholder="Short description explaining what beauty services fall under this category..."
+                                placeholder="Short description explaining what cosmetics or skincare products fall under this category..."
                                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 outline-none transition-all"
                             />
                         </div>
@@ -1117,7 +1117,7 @@ const getCategoryImageUrl = (category) => {
                         <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
                             <div>
                                 <p class="text-xs font-bold text-slate-900">Active Status</p>
-                                <p class="text-[11px] text-slate-500">When active, this category is visible in marketplace search and booking filters.</p>
+                                <p class="text-[11px] text-slate-500">When active, this category is visible in marketplace search and catalog filters.</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" v-model="form.is_active" class="sr-only peer" />

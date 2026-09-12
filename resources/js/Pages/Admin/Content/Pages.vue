@@ -659,7 +659,7 @@ const formatDate = (dateStr) => {
                                 <input
                                     v-model="form.meta_title"
                                     type="text"
-                                    placeholder="e.g. Terms of Service | Premium Beauty Salon Marketplace"
+                                    placeholder="e.g. Terms of Service | Luxe Beauty Market"
                                     class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
                                 />
                             </div>
@@ -690,10 +690,10 @@ const formatDate = (dateStr) => {
                                     <span>{{ form.slug || 'page-slug' }}</span>
                                 </p>
                                 <h4 class="text-base text-blue-800 hover:underline font-medium cursor-pointer">
-                                    {{ form.meta_title || form.title || 'Page Title | Beauty Salon Marketplace' }}
+                                    {{ form.meta_title || form.title || 'Page Title | Luxe Beauty Market' }}
                                 </h4>
                                 <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                                    {{ form.meta_description || 'Read our detailed document and marketplace policies across top beauty salons in Pakistan.' }}
+                                    {{ form.meta_description || 'Read our detailed document and marketplace policies across authentic cosmetics and skincare in Pakistan.' }}
                                 </p>
                             </div>
                         </div>

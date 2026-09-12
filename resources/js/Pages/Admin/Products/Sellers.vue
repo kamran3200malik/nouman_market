@@ -113,7 +113,7 @@ const isRejecting = ref(false);
 
 const openRejectModal = (artist) => {
     selectedArtist.value = artist;
-    rejectionReason.value = 'Incomplete payout information or unverified salon credentials.';
+    rejectionReason.value = 'Incomplete payout information or unverified vendor credentials.';
     showRejectModal.value = true;
 };
 
@@ -126,7 +126,7 @@ const submitRejection = () => {
         onSuccess: () => {
             isRejecting.value = false;
             showRejectModal.value = false;
-            showToast(`Seller request rejected. Artist has been notified.`, 'info');
+            showToast(`Seller request rejected. Vendor has been notified.`, 'info');
         },
         onError: () => {
             isRejecting.value = false;
@@ -145,16 +145,16 @@ const statusTabs = [
 
 <template>
     <AdminLayout>
-        <Head title="Artist Product Seller Authorization CRM" />
+        <Head title="Vendor & Seller Authorization CRM" />
 
         <div class="space-y-6">
             <!-- Header section -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <span class="text-xs font-bold uppercase tracking-wider text-rose-600">Vendor Management</span>
-                    <h1 class="text-2xl sm:text-3xl font-serif font-bold text-slate-900">Salon Product Seller Authorizations</h1>
+                    <h1 class="text-2xl sm:text-3xl font-serif font-bold text-slate-900">Vendor & Seller Authorizations</h1>
                     <p class="text-xs sm:text-sm text-slate-500">
-                        Review salon digital commission agreements, set platform commission rates, and authorize artists to list beauty products.
+                        Review vendor digital commission agreements, set platform commission rates, and authorize merchants to list beauty products.
                     </p>
                 </div>
 
@@ -243,7 +243,7 @@ const statusTabs = [
                         v-model="searchInput"
                         @keyup.enter="applyFilters"
                         type="text"
-                        placeholder="Search by salon name, owner, email, phone, or bank title..."
+                        placeholder="Search by store name, vendor, email, phone, or bank title..."
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-800 focus:border-rose-500 focus:bg-white focus:ring-0"
                     />
                 </div>
@@ -255,7 +255,7 @@ const statusTabs = [
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-bold uppercase tracking-wider">
                             <tr>
-                                <th class="px-5 py-3.5">Salon / Store Name</th>
+                                <th class="px-5 py-3.5">Vendor / Store Name</th>
                                 <th class="px-4 py-3.5">Owner & Location</th>
                                 <th class="px-4 py-3.5">Bank Payout Info</th>
                                 <th class="px-4 py-3.5">Commission Agreement</th>
@@ -348,7 +348,7 @@ const statusTabs = [
                     <div v-if="sellers.data.length === 0" class="text-center py-16 space-y-2">
                         <span class="text-3xl block">📝</span>
                         <p class="text-sm font-semibold text-slate-700">No seller requests found</p>
-                        <p class="text-xs text-slate-400">When salons apply to sell their beauty products and sign the agreement, they appear here.</p>
+                        <p class="text-xs text-slate-400">When vendors apply to sell their beauty products and sign the agreement, they appear here.</p>
                     </div>
                 </div>
 
@@ -400,7 +400,7 @@ const statusTabs = [
                             placeholder="10.00"
                             class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-bold text-slate-900 focus:border-rose-500 focus:bg-white"
                         />
-                        <span class="text-[11px] text-slate-400 mt-1 block">Standard rate is 10.00% (Artist receives 90.00% on each product sale).</span>
+                        <span class="text-[11px] text-slate-400 mt-1 block">Standard rate is 10.00% (Vendor receives 90.00% on each product sale).</span>
                     </div>
 
                     <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">

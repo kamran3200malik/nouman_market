@@ -422,21 +422,16 @@ const formatJsonDisplay = (obj) => {
                         >
                             <option value="all">All Modules</option>
                             <option value="Auth">Auth & Sessions</option>
-                            <option value="User">Users</option>
-                            <option value="ArtistProfile">Artists & Salons</option>
-                            <option value="Booking">Bookings</option>
-                            <option value="Service">Services</option>
-                            <option value="Product">Products</option>
-                            <option value="ProductOrder">Product Orders</option>
+                            <option value="User">Users & Customers</option>
+                            <option value="Product">Products & Catalog</option>
+                            <option value="ProductOrder">Orders & Checkout</option>
                             <option value="Category">Categories</option>
-                            <option value="Review">Reviews</option>
-                            <option value="Payment">Payments</option>
-                            <option value="Payout">Payouts</option>
-                            <option value="Banner">Banners</option>
+                            <option value="Review">Product Reviews</option>
+                            <option value="Banner">Hero Banners</option>
                             <option value="Page">CMS Pages</option>
-                            <option value="Setting">Settings</option>
+                            <option value="Setting">System Settings</option>
                             <option value="System">System Actions</option>
-                            <option v-for="mod in modulesList.filter(m => !['Auth','User','ArtistProfile','Booking','Service','Product','ProductOrder','Category','Review','Payment','Payout','Banner','Page','Setting','System'].includes(m))" :key="mod" :value="mod">
+                            <option v-for="mod in modulesList.filter(m => !['Auth','User','Product','ProductOrder','Category','Review','Banner','Page','Setting','System'].includes(m))" :key="mod" :value="mod">
                                 {{ mod }}
                             </option>
                         </select>

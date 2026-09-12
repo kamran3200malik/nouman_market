@@ -46,7 +46,7 @@ onUnmounted(() => {
 
         <Navbar />
 
-        <main class="flex-grow pt-24 sm:pt-28 pb-28 sm:pb-24 relative z-10">
+        <main class="flex-grow pt-20 sm:pt-28 pb-28 sm:pb-24 relative z-10">
             <slot />
         </main>
 
@@ -122,47 +122,7 @@ onUnmounted(() => {
         <!-- Luxury Marketplace Footer -->
         <footer class="relative mt-12 border-t border-pink-200/80 bg-white/90 backdrop-blur-xl py-12">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Value Proposition Trust Badges -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pb-10 border-b border-pink-100">
-                    <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 text-lg shrink-0">
-                            🛡️
-                        </div>
-                        <div>
-                            <h5 class="text-xs font-bold text-slate-900">100% Genuine</h5>
-                            <p class="text-[11px] text-slate-500">Directly sourced verified brands</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-2xl bg-pink-50 border border-pink-200 flex items-center justify-center text-pink-600 text-lg shrink-0">
-                            🚚
-                        </div>
-                        <div>
-                            <h5 class="text-xs font-bold text-slate-900">Fast Express Delivery</h5>
-                            <p class="text-[11px] text-slate-500">Across all major cities</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 text-lg shrink-0">
-                            💵
-                        </div>
-                        <div>
-                            <h5 class="text-xs font-bold text-slate-900">Cash on Delivery</h5>
-                            <p class="text-[11px] text-slate-500">Pay conveniently at doorstep</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 text-lg shrink-0">
-                            💬
-                        </div>
-                        <div>
-                            <h5 class="text-xs font-bold text-slate-900">Dedicated Support</h5>
-                            <p class="text-[11px] text-slate-500">Instant WhatsApp assistance</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 py-10 border-b border-pink-100">
+                <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 pb-10 border-b border-pink-100">
                     <!-- Brand & Mission -->
                     <div class="space-y-3.5">
                         <Link :href="route('home')" class="flex items-center gap-2.5">

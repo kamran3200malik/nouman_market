@@ -57,7 +57,7 @@ const formatTime = (dateString) => {
                         <span>Communications & Inquiries Oversight</span>
                     </h1>
                     <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                        Monitor live conversations, client questions, and dispute records across all salons on the marketplace.
+                        Monitor live buyer inquiries, product question threads, and customer support disputes.
                     </p>
                 </div>
 
@@ -74,7 +74,7 @@ const formatTime = (dateString) => {
                     <input
                         v-model="searchQuery"
                         type="text"
-                        placeholder="Search conversations by client, salon or message..."
+                        placeholder="Search conversations by buyer, seller, or message..."
                         class="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-glam-500/20"
                     />
                     <span class="absolute left-3.5 top-2.5 text-slate-400 text-xs">🔍</span>
@@ -87,9 +87,9 @@ const formatTime = (dateString) => {
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold text-[10px] tracking-wider">
                             <tr>
-                                <th class="p-4">Customer</th>
-                                <th class="p-4">Salon / Artist</th>
-                                <th class="p-4">Linked Service / Booking</th>
+                                <th class="p-4">Customer / Buyer</th>
+                                <th class="p-4">Seller / Merchant</th>
+                                <th class="p-4">Linked Subject</th>
                                 <th class="p-4">Latest Message</th>
                                 <th class="p-4">Total Messages</th>
                                 <th class="p-4">Last Activity</th>
@@ -106,13 +106,13 @@ const formatTime = (dateString) => {
                                     {{ conv.customer?.name || 'Customer' }}
                                 </td>
                                 <td class="p-4 font-bold text-glam-800">
-                                    {{ conv.artist_profile?.business_name || conv.artist_profile?.user?.name || 'Salon' }}
+                                    {{ conv.artist_profile?.business_name || conv.artist_profile?.user?.name || 'Store Merchant' }}
                                 </td>
                                 <td class="p-4">
                                     <span v-if="conv.booking" class="px-2 py-0.5 rounded-lg bg-pink-50 text-pink-700 font-bold border border-pink-100">
                                         {{ conv.booking?.service?.name || `#${conv.booking?.booking_number}` }}
                                     </span>
-                                    <span v-else class="text-slate-400">Direct Chat</span>
+                                    <span v-else class="text-slate-400">Direct Inquiry</span>
                                 </td>
                                 <td class="p-4 max-w-xs truncate text-slate-600">
                                     {{ conv.latest_message?.message || 'No messages' }}

@@ -46,7 +46,7 @@ const filterByCategory = (cat) => {
 
 <template>
     <PublicLayout>
-        <Head title="Beauty Editorial, Guides & Salon Trends - BeautyBook" />
+        <Head title="Beauty Editorial, Skincare Guides & Routine Insights - Luxe Market" />
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
             <!-- Hero Header Section -->
@@ -58,7 +58,7 @@ const filterByCategory = (cat) => {
                     Stories, Trends & Expert Beauty Guides
                 </h1>
                 <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
-                    Explore curated tips from leading makeup artists, salon directors, skincare experts, and transformation artists.
+                    Explore curated tips, clinical skincare routines, ingredient deep-dives, and luxury perfume guides.
                 </p>
 
                 <!-- Search Bar -->

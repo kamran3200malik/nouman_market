@@ -69,8 +69,10 @@ const testChimeSound = () => {
 
 const getNotificationIcon = (type) => {
     switch (type) {
-        case 'booking':
-            return '🗓️';
+        case 'order':
+            return '📦';
+        case 'product':
+            return '💄';
         case 'message':
             return '💬';
         case 'review':

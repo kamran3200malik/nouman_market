@@ -11,15 +11,26 @@ return new class extends Migration
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('user_name')->nullable();
+            $table->string('user_email')->nullable();
+            $table->string('user_role')->nullable();
             $table->string('action');
-            $table->string('description')->nullable();
-            $table->string('subject_type')->nullable();
-            $table->unsignedBigInteger('subject_id')->nullable();
-            $table->json('properties')->nullable();
+            $table->string('module')->nullable();
+            $table->string('entity_type')->nullable();
+            $table->unsignedBigInteger('entity_id')->nullable();
+            $table->string('entity_name')->nullable();
+            $table->text('description')->nullable();
+            $table->json('old_values')->nullable();
+            $table->json('new_values')->nullable();
             $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->text('url')->nullable();
+            $table->string('method', 10)->nullable();
             $table->timestamps();
 
-            $table->index(['subject_type', 'subject_id']);
+            $table->index(['entity_type', 'entity_id']);
+            $table->index('action');
+            $table->index('module');
         });
     }
 

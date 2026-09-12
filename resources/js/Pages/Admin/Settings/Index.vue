@@ -11,7 +11,7 @@ const props = defineProps({
     },
 });
 
-const activeSection = ref('general'); // 'general' | 'monetization' | 'booking' | 'notifications' | 'social' | 'system'
+const activeSection = ref('general'); // 'general' | 'shipping' | 'notifications' | 'social_seo' | 'system'
 
 const form = useForm({
     settings: {
@@ -27,31 +27,21 @@ const form = useForm({
         currency_symbol: props.settings.currency_symbol || 'PKR',
         timezone: props.settings.timezone || 'Asia/Karachi',
 
-        // Monetization
-        commission_rate: props.settings.commission_rate || '10',
-        subscription_monthly_fee: props.settings.subscription_monthly_fee || '3000',
-        subscription_grace_days: props.settings.subscription_grace_days || '3',
-        min_payout_threshold: props.settings.min_payout_threshold || '5000',
-        tax_percentage: props.settings.tax_percentage || '0',
-
         // Shipping & Logistics (Marketplace)
         shipping_fee_standard: props.settings.shipping_fee_standard || '250',
-        shipping_free_threshold: props.settings.shipping_free_threshold || '3000',
+        shipping_free_threshold: props.settings.shipping_free_threshold || '5000',
         shipping_free_enabled: props.settings.shipping_free_enabled === '1' || props.settings.shipping_free_enabled === true,
-        shipping_carrier_name: props.settings.shipping_carrier_name || 'Standard Express Beauty Courier',
+        shipping_carrier_name: props.settings.shipping_carrier_name || 'TCS / Leopard Express',
         shipping_estimated_days: props.settings.shipping_estimated_days || '2 - 4 Business Days',
-
-        // Booking Policies
-        max_advance_booking_days: props.settings.max_advance_booking_days || '30',
-        min_booking_notice_hours: props.settings.min_booking_notice_hours || '2',
-        cancellation_cutoff_hours: props.settings.cancellation_cutoff_hours || '6',
-        auto_confirm_bookings: props.settings.auto_confirm_bookings === '1' || props.settings.auto_confirm_bookings === true,
+        cash_on_delivery_enabled: props.settings.cash_on_delivery_enabled === '1' || props.settings.cash_on_delivery_enabled === true,
+        online_payment_enabled: props.settings.online_payment_enabled === '1' || props.settings.online_payment_enabled === true,
+        tax_percentage: props.settings.tax_percentage || '0',
         allow_customer_reviews: props.settings.allow_customer_reviews === '1' || props.settings.allow_customer_reviews === true,
 
         // Notifications
-        email_booking_notifications: props.settings.email_booking_notifications === '1' || props.settings.email_booking_notifications === true,
+        email_order_notifications: props.settings.email_order_notifications === '1' || props.settings.email_order_notifications === true,
         sms_whatsapp_notifications: props.settings.sms_whatsapp_notifications === '1' || props.settings.sms_whatsapp_notifications === true,
-        admin_new_salon_alerts: props.settings.admin_new_salon_alerts === '1' || props.settings.admin_new_salon_alerts === true,
+        admin_new_order_alerts: props.settings.admin_new_order_alerts === '1' || props.settings.admin_new_order_alerts === true,
 
         // Social
         social_instagram: props.settings.social_instagram || '',
@@ -60,9 +50,9 @@ const form = useForm({
         social_youtube: props.settings.social_youtube || '',
 
         // SEO & Search Indexing
-        seo_meta_title: props.settings.seo_meta_title || 'BeautyBook Luxe - Premier Salon Marketplace & Beauty CRM',
-        seo_meta_description: props.settings.seo_meta_description || 'Discover and book verified luxury salons, certified makeup artists, bridal packages, and professional beauty essentials across Pakistan.',
-        seo_meta_keywords: props.settings.seo_meta_keywords || 'salon booking pakistan, bridal makeup lahore, beauty parlor karachi, makeup artists islamabad, beauty products online, salon appointments',
+        seo_meta_title: props.settings.seo_meta_title || 'Luxe Beauty Market - Authentic Cosmetics & Skincare',
+        seo_meta_description: props.settings.seo_meta_description || 'Shop 100% original skincare, cosmetics, makeup, haircare and luxury fragrances with fast delivery across Pakistan.',
+        seo_meta_keywords: props.settings.seo_meta_keywords || 'cosmetics pakistan, skincare lahore, makeup online karachi, original perfumes, beauty shop pakistan',
         seo_google_analytics: props.settings.seo_google_analytics || '',
         seo_google_verification: props.settings.seo_google_verification || '',
         seo_index_enabled: props.settings.seo_index_enabled === '1' || props.settings.seo_index_enabled === true || props.settings.seo_index_enabled === undefined,
@@ -81,7 +71,7 @@ const submit = () => {
                 toast: true,
                 position: 'top-end',
                 icon: 'success',
-                title: '⚙️ Platform configuration saved successfully!',
+                title: '⚙️ Store configuration saved successfully!',
                 showConfirmButton: false,
                 timer: 3000,
             });
@@ -98,733 +88,427 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Platform Settings & System Controls | Admin Console" />
+    <Head title="Store Settings | Marketplace Admin" />
 
     <AdminLayout>
-        <div class="space-y-6">
-            <!-- 1. EXECUTIVE HEADER -->
+        <div class="space-y-6 max-w-6xl mx-auto pb-12">
+            <!-- Header Bar -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <div class="flex items-center gap-2.5">
-                        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-                            Platform Settings & System Controls
-                        </h1>
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                            CONFIG STUDIO
-                        </span>
-                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-serif font-black text-slate-900">
+                        Marketplace Store Settings
+                    </h1>
                     <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                        Configure brand identity, default salon commissions, subscription plans, booking lead times, and global platform policies.
+                        Configure brand identity, shipping tariffs, payment channels, SEO keywords, and notifications.
                     </p>
                 </div>
 
-                <!-- Save Trigger -->
                 <button
-                    type="button"
                     @click="submit"
                     :disabled="form.processing"
-                    class="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-glam-500 via-rose-500 to-pink-600 hover:from-glam-600 hover:to-pink-700 text-white text-xs font-bold shadow-lg shadow-pink-950/20 transition-all active:scale-98 flex items-center gap-2 self-start sm:self-auto cursor-pointer disabled:opacity-50"
+                    class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-rose-500/25 transition-all hover:scale-102 active:scale-95 disabled:opacity-50 cursor-pointer shrink-0"
                 >
-                    <span>💾</span>
-                    <span>{{ form.processing ? 'Saving Changes...' : 'Save Configuration' }}</span>
+                    <span v-if="form.processing" class="animate-spin">⏳</span>
+                    <span v-else>💾</span>
+                    <span>{{ form.processing ? 'Saving...' : 'Save Settings' }}</span>
                 </button>
             </div>
 
-            <!-- 2. MAIN TWO-COLUMN LAYOUT (NAVIGATION MENU + SETTINGS PANEL) -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Navigation Sidebar (3 Cols) -->
-                <div class="lg:col-span-3 space-y-2">
-                    <div class="p-3 bg-white rounded-3xl border border-rose-100 shadow-xs space-y-1">
-                        <button
-                            v-for="section in [
-                                { key: 'general', icon: '🌸', label: 'Brand & General', desc: 'Identity, contacts & currency' },
-                                { key: 'shipping', icon: '🚚', label: 'Shipping & Logistics', desc: 'Delivery rates & free shipping' },
-                                { key: 'monetization', icon: '💰', label: 'Monetization & Fees', desc: 'Commissions & subscriptions' },
-                                { key: 'booking', icon: '🗓️', label: 'Booking & Policies', desc: 'Lead times & cancellations' },
-                                { key: 'notifications', icon: '🔔', label: 'Alerts & Gateways', desc: 'Email, WhatsApp & digests' },
-                                { key: 'social', icon: '🌐', label: 'Social Channels', desc: 'Instagram, TikTok & links' },
-                                { key: 'seo', icon: '🔍', label: 'SEO & Search Engine', desc: 'Sitemap, meta tags & SERP' },
-                                { key: 'system', icon: '🛡️', label: 'System & Maintenance', desc: 'Maintenance mode & notices' },
-                            ]"
-                            :key="section.key"
-                            type="button"
-                            @click="activeSection = section.key"
-                            class="w-full p-3 rounded-2xl text-left transition-all flex items-start gap-3 cursor-pointer"
-                            :class="activeSection === section.key
-                                ? 'bg-rose-50/80 border border-rose-200 text-slate-900 shadow-xs'
-                                : 'hover:bg-slate-50 text-slate-600 border border-transparent'"
-                        >
-                            <span class="text-xl shrink-0 mt-0.5">{{ section.icon }}</span>
-                            <div>
-                                <p class="text-xs font-bold" :class="activeSection === section.key ? 'text-glam-800' : 'text-slate-800'">
-                                    {{ section.label }}
-                                </p>
-                                <p class="text-[10px] text-slate-400 mt-0.5">{{ section.desc }}</p>
-                            </div>
-                        </button>
-                    </div>
+            <!-- Settings Layout: Vertical Tabs + Panels -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+                <!-- Navigation Tabs -->
+                <div class="rounded-3xl bg-white p-3 shadow-sm border border-slate-200/80 space-y-1">
+                    <button
+                        type="button"
+                        @click="activeSection = 'general'"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all text-left cursor-pointer"
+                        :class="activeSection === 'general' ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20' : 'text-slate-600 hover:bg-slate-100'"
+                    >
+                        <span>🏪</span>
+                        <span>General & Store Identity</span>
+                    </button>
 
-                    <!-- Live Brand Snapshot Card -->
-                    <div class="p-5 rounded-3xl bg-slate-950 text-white shadow-lg border border-slate-800 space-y-2">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-rose-400">Live Brand Telemetry</span>
-                        <h4 class="font-serif font-bold text-sm text-white line-clamp-1">
-                            {{ form.settings.site_name || 'Glamora Beauty' }}
-                        </h4>
-                        <p class="text-[11px] text-slate-300 line-clamp-2">
-                            {{ form.settings.site_tagline || 'Luxury Salon Appointments' }}
-                        </p>
-                        <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
-                            <span>Default Commission:</span>
-                            <span class="text-rose-400 font-bold">{{ form.settings.commission_rate }}%</span>
-                        </div>
-                    </div>
+                    <button
+                        type="button"
+                        @click="activeSection = 'shipping'"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all text-left cursor-pointer"
+                        :class="activeSection === 'shipping' ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20' : 'text-slate-600 hover:bg-slate-100'"
+                    >
+                        <span>🚚</span>
+                        <span>Shipping & Payments</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        @click="activeSection = 'notifications'"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all text-left cursor-pointer"
+                        :class="activeSection === 'notifications' ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20' : 'text-slate-600 hover:bg-slate-100'"
+                    >
+                        <span>🔔</span>
+                        <span>Order Notifications</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        @click="activeSection = 'social_seo'"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all text-left cursor-pointer"
+                        :class="activeSection === 'social_seo' ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20' : 'text-slate-600 hover:bg-slate-100'"
+                    >
+                        <span>🌐</span>
+                        <span>Social Media & SEO</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        @click="activeSection = 'system'"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all text-left cursor-pointer"
+                        :class="activeSection === 'system' ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20' : 'text-slate-600 hover:bg-slate-100'"
+                    >
+                        <span>🛠️</span>
+                        <span>System & Maintenance</span>
+                    </button>
                 </div>
 
-                <!-- Settings Content Panel (9 Cols) -->
-                <div class="lg:col-span-9 space-y-6">
-                    <form @submit.prevent="submit" class="p-6 sm:p-8 bg-white rounded-3xl border border-rose-100 shadow-xs space-y-6">
-                        <!-- ========================================================= -->
-                        <!-- SECTION 1: BRANDING & GENERAL -->
-                        <!-- ========================================================= -->
+                <!-- Settings Content Panel -->
+                <div class="lg:col-span-3 rounded-3xl bg-white p-6 sm:p-8 shadow-sm border border-slate-200/80">
+                    <form @submit.prevent="submit" class="space-y-6">
+                        <!-- SECTION 1: GENERAL & STORE IDENTITY -->
                         <div v-show="activeSection === 'general'" class="space-y-5">
-                            <div>
-                                <h3 class="text-base font-serif font-bold text-slate-900">🌸 Brand Identity & General Platform</h3>
-                                <p class="text-xs text-slate-400">Marketplace name, support contact channels, and currency settings.</p>
+                            <div class="border-b border-slate-100 pb-4">
+                                <h3 class="text-base font-bold text-slate-900">Store Profile & Branding</h3>
+                                <p class="text-xs text-slate-500">Configure marketplace naming, contact emails, and currency representation.</p>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Marketplace Site Name <span class="text-rose-500">*</span></label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Store Name *</label>
                                     <input
                                         v-model="form.settings.site_name"
                                         type="text"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
                                         required
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Slogan / Tagline</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Store Tagline</label>
                                     <input
                                         v-model="form.settings.site_tagline"
                                         type="text"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label class="text-[11px] font-bold text-slate-700">Meta Site Description</label>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Store Description</label>
                                 <textarea
                                     v-model="form.settings.site_description"
-                                    rows="2"
-                                    class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                    rows="3"
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                 ></textarea>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Official Support Email</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Support Email</label>
                                     <input
                                         v-model="form.settings.contact_email"
                                         type="email"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Support Helpline Phone</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Support Phone</label>
                                     <input
                                         v-model="form.settings.contact_phone"
                                         type="text"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Support WhatsApp Number</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp Hotline</label>
                                     <input
                                         v-model="form.settings.support_whatsapp"
                                         type="text"
                                         placeholder="+923001234567"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
-                                    />
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Currency Code</label>
-                                    <input
-                                        v-model="form.settings.currency_code"
-                                        type="text"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Currency Symbol</label>
-                                    <input
-                                        v-model="form.settings.currency_symbol"
-                                        type="text"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Platform Timezone</label>
-                                    <input
-                                        v-model="form.settings.timezone"
-                                        type="text"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label class="text-[11px] font-bold text-slate-700">Headquarter Physical Address</label>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Warehouse / Office Address</label>
                                 <input
                                     v-model="form.settings.office_address"
                                     type="text"
-                                    class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                 />
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Currency Code</label>
+                                    <input
+                                        v-model="form.settings.currency_code"
+                                        type="text"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Currency Symbol</label>
+                                    <input
+                                        v-model="form.settings.currency_symbol"
+                                        type="text"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Timezone</label>
+                                    <input
+                                        v-model="form.settings.timezone"
+                                        type="text"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        <!-- ========================================================= -->
-                        <!-- SECTION: SHIPPING & LOGISTICS (MARKETPLACE) -->
-                        <!-- ========================================================= -->
+                        <!-- SECTION 2: SHIPPING & PAYMENTS -->
                         <div v-show="activeSection === 'shipping'" class="space-y-5">
-                            <div>
-                                <h3 class="text-base font-serif font-bold text-slate-900">🚚 Cosmetics & Merchandise Shipping Logistics</h3>
-                                <p class="text-xs text-slate-400">Configure standard shipping charges, free shipping thresholds, courier partners, and transit delivery estimates for beauty products.</p>
+                            <div class="border-b border-slate-100 pb-4">
+                                <h3 class="text-base font-bold text-slate-900">Shipping Tariffs & Payment Channels</h3>
+                                <p class="text-xs text-slate-500">Configure courier shipping rules, free delivery eligibility, COD, and sales tax.</p>
                             </div>
 
-                            <!-- Highlights & Pricing Cards -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-2">
-                                    <div class="flex items-center justify-between">
-                                        <label class="text-xs font-bold text-slate-900">Standard Shipping Fee (PKR)</label>
-                                        <span class="text-xs font-bold text-indigo-700">📦 Standard Flat Rate</span>
-                                    </div>
-                                    <p class="text-[10px] text-slate-500">Default delivery fee added to beauty store cart checkout when below free threshold.</p>
-                                    <div class="relative mt-1">
-                                        <input
-                                            v-model="form.settings.shipping_fee_standard"
-                                            type="number"
-                                            min="0"
-                                            step="10"
-                                            class="w-full p-2.5 pr-14 rounded-xl border border-indigo-200 bg-white text-xs sm:text-sm text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500"
-                                        />
-                                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-bold text-slate-400">PKR</span>
-                                    </div>
-                                </div>
-
-                                <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-2">
-                                    <div class="flex items-center justify-between">
-                                        <label class="text-xs font-bold text-slate-900">Free Shipping Minimum Cart Order (PKR)</label>
-                                        <span class="text-xs font-bold text-emerald-700">✨ Free Delivery</span>
-                                    </div>
-                                    <p class="text-[10px] text-slate-500">Cart subtotal amount required to unlock 100% Free Nationwide Delivery.</p>
-                                    <div class="relative mt-1">
-                                        <input
-                                            v-model="form.settings.shipping_free_threshold"
-                                            type="number"
-                                            min="0"
-                                            step="100"
-                                            :disabled="!form.settings.shipping_free_enabled"
-                                            class="w-full p-2.5 pr-14 rounded-xl border border-emerald-200 bg-white text-xs sm:text-sm text-slate-900 font-bold focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
-                                        />
-                                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-bold text-slate-400">PKR</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Enable / Disable Free Shipping Toggle -->
-                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
                                 <div>
-                                    <p class="text-xs font-bold text-slate-900">Enable "Free Shipping" Incentive</p>
-                                    <p class="text-[10px] text-slate-500">Display dynamic free shipping progress bars and waive delivery charges when orders reach threshold.</p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Standard Delivery Fee (PKR)</label>
                                     <input
-                                        type="checkbox"
-                                        v-model="form.settings.shipping_free_enabled"
-                                        class="sr-only peer"
+                                        v-model="form.settings.shipping_fee_standard"
+                                        type="number"
+                                        min="0"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
-                                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-                                </label>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Free Shipping Minimum Threshold (PKR)</label>
+                                    <input
+                                        v-model="form.settings.shipping_free_threshold"
+                                        type="number"
+                                        min="0"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                                    />
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Official Logistics / Courier Partner</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Courier Partner Name</label>
                                     <input
                                         v-model="form.settings.shipping_carrier_name"
                                         type="text"
-                                        placeholder="e.g., Standard Express Beauty Courier / TCS / Call Courier"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                        placeholder="TCS / Leopard / Call Courier"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
-                                    <p class="text-[10px] text-slate-400 mt-1">Displayed on customer invoices and shipment tracking timeline.</p>
                                 </div>
-
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Estimated Delivery Window</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Estimated Delivery Timeline</label>
                                     <input
                                         v-model="form.settings.shipping_estimated_days"
                                         type="text"
-                                        placeholder="e.g., 2 - 4 Business Days"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                        placeholder="2 - 4 Business Days"
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
-                                    <p class="text-[10px] text-slate-400 mt-1">Estimated delivery duration shown to clients in cart drawer.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ========================================================= -->
-                        <!-- SECTION 2: MONETIZATION & COMMISSIONS -->
-                        <!-- ========================================================= -->
-                        <div v-show="activeSection === 'monetization'" class="space-y-5">
-                            <div>
-                                <h3 class="text-base font-serif font-bold text-slate-900">💰 Monetization, Subscriptions & Payouts</h3>
-                                <p class="text-xs text-slate-400">Manage default salon commission takes, flat monthly plan pricing, and payout thresholds.</p>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="p-4 rounded-2xl bg-rose-50/50 border border-rose-100 space-y-2">
-                                    <div class="flex items-center justify-between">
-                                        <label class="text-xs font-bold text-slate-900">Default Commission Rate (%)</label>
-                                        <span class="text-xs font-bold text-glam-700">% Fee Model</span>
-                                    </div>
-                                    <p class="text-[10px] text-slate-500">Platform fee deducted per completed treatment booking on commission plan.</p>
-                                    <div class="relative mt-1">
-                                        <input
-                                            v-model="form.settings.commission_rate"
-                                            type="number"
-                                            min="0"
-                                            max="100"
-                                            class="w-full p-2.5 pr-8 rounded-xl border border-rose-200 bg-white text-xs sm:text-sm text-slate-900 font-bold"
-                                        />
-                                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-bold text-slate-400">%</span>
-                                    </div>
-                                </div>
-
-                                <div class="p-4 rounded-2xl bg-purple-50/50 border border-purple-100 space-y-2">
-                                    <div class="flex items-center justify-between">
-                                        <label class="text-xs font-bold text-slate-900">Monthly Subscription Fee (PKR)</label>
-                                        <span class="text-xs font-bold text-purple-700">💎 Pro Plan</span>
-                                    </div>
-                                    <p class="text-[10px] text-slate-500">Flat monthly subscription fee for 0% commission unlimited bookings.</p>
-                                    <div class="relative mt-1">
-                                        <input
-                                            v-model="form.settings.subscription_monthly_fee"
-                                            type="number"
-                                            min="0"
-                                            step="500"
-                                            class="w-full p-2.5 pr-14 rounded-xl border border-purple-200 bg-white text-xs sm:text-sm text-slate-900 font-bold"
-                                        />
-                                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-bold text-slate-400">PKR</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Subscription Grace Days</label>
-                                    <input
-                                        v-model="form.settings.subscription_grace_days"
-                                        type="number"
-                                        min="0"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
-                                    />
-                                    <p class="text-[10px] text-slate-400 mt-1">Days before auto-suspension upon expiry.</p>
-                                </div>
-
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Minimum Payout Withdrawal (PKR)</label>
-                                    <input
-                                        v-model="form.settings.min_payout_threshold"
-                                        type="number"
-                                        min="1000"
-                                        step="500"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
-                                    />
-                                    <p class="text-[10px] text-slate-400 mt-1">Minimum balance for salon payout request.</p>
-                                </div>
-
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Applicable Sales Tax / GST (%)</label>
-                                    <input
-                                        v-model="form.settings.tax_percentage"
-                                        type="number"
-                                        min="0"
-                                        max="30"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
-                                    />
-                                    <p class="text-[10px] text-slate-400 mt-1">General sales tax percentage.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ========================================================= -->
-                        <!-- SECTION 3: BOOKING & POLICIES -->
-                        <!-- ========================================================= -->
-                        <div v-show="activeSection === 'booking'" class="space-y-5">
-                            <div>
-                                <h3 class="text-base font-serif font-bold text-slate-900">🗓️ Booking Funnel & Appointment Policies</h3>
-                                <p class="text-xs text-slate-400">Rules governing appointment scheduling windows, notice hours, and cancellations.</p>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Max Advance Booking Window</label>
-                                    <div class="relative mt-1">
-                                        <input
-                                            v-model="form.settings.max_advance_booking_days"
-                                            type="number"
-                                            min="1"
-                                            max="365"
-                                            class="w-full p-2.5 pr-12 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500 font-bold"
-                                        />
-                                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-slate-400">Days</span>
-                                    </div>
-                                    <p class="text-[10px] text-slate-400 mt-1">How far in advance clients can reserve.</p>
-                                </div>
-
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Minimum Notice Required</label>
-                                    <div class="relative mt-1">
-                                        <input
-                                            v-model="form.settings.min_booking_notice_hours"
-                                            type="number"
-                                            min="0"
-                                            class="w-full p-2.5 pr-14 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500 font-bold"
-                                        />
-                                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-slate-400">Hours</span>
-                                    </div>
-                                    <p class="text-[10px] text-slate-400 mt-1">Lead time before appointment start.</p>
-                                </div>
-
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Free Cancellation Cutoff</label>
-                                    <div class="relative mt-1">
-                                        <input
-                                            v-model="form.settings.cancellation_cutoff_hours"
-                                            type="number"
-                                            min="0"
-                                            class="w-full p-2.5 pr-14 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500 font-bold"
-                                        />
-                                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-slate-400">Hours</span>
-                                    </div>
-                                    <p class="text-[10px] text-slate-400 mt-1">Hours before start for penalty-free cancel.</p>
                                 </div>
                             </div>
 
                             <div class="space-y-3 pt-2">
-                                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-                                    <div>
-                                        <p class="text-xs font-bold text-slate-900">Instant Auto-Confirmation</p>
-                                        <p class="text-[10px] text-slate-400">Automatically confirm appointment bookings if salon calendar slot is open</p>
-                                    </div>
+                                <label class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
                                     <input
-                                        v-model="form.settings.auto_confirm_bookings"
+                                        v-model="form.settings.shipping_free_enabled"
                                         type="checkbox"
-                                        class="w-5 h-5 text-rose-600 rounded-lg focus:ring-rose-500 cursor-pointer"
+                                        class="rounded text-rose-600 focus:ring-rose-500 h-4 w-4"
                                     />
-                                </div>
-
-                                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                                     <div>
-                                        <p class="text-xs font-bold text-slate-900">Enable Client Verified Reviews</p>
-                                        <p class="text-[10px] text-slate-400">Allow customers who completed appointments to leave 1-5 star ratings & comments</p>
+                                        <span class="text-xs font-bold text-slate-900 block">Enable Free Nationwide Shipping Banner</span>
+                                        <span class="text-[11px] text-slate-500">Automatically apply PKR 0 shipping when cart exceeds the threshold.</span>
                                     </div>
+                                </label>
+
+                                <label class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
+                                    <input
+                                        v-model="form.settings.cash_on_delivery_enabled"
+                                        type="checkbox"
+                                        class="rounded text-rose-600 focus:ring-rose-500 h-4 w-4"
+                                    />
+                                    <div>
+                                        <span class="text-xs font-bold text-slate-900 block">Enable Cash on Delivery (COD)</span>
+                                        <span class="text-[11px] text-slate-500">Allow customers to pay cash upon parcel delivery at their doorstep.</span>
+                                    </div>
+                                </label>
+
+                                <label class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
                                     <input
                                         v-model="form.settings.allow_customer_reviews"
                                         type="checkbox"
-                                        class="w-5 h-5 text-rose-600 rounded-lg focus:ring-rose-500 cursor-pointer"
+                                        class="rounded text-rose-600 focus:ring-rose-500 h-4 w-4"
                                     />
-                                </div>
+                                    <div>
+                                        <span class="text-xs font-bold text-slate-900 block">Allow Customer Reviews & Ratings</span>
+                                        <span class="text-[11px] text-slate-500">Allow verified buyers to leave reviews on purchased products.</span>
+                                    </div>
+                                </label>
                             </div>
                         </div>
 
-                        <!-- ========================================================= -->
-                        <!-- SECTION 4: NOTIFICATIONS & GATEWAYS -->
-                        <!-- ========================================================= -->
+                        <!-- SECTION 3: ORDER NOTIFICATIONS -->
                         <div v-show="activeSection === 'notifications'" class="space-y-5">
-                            <div>
-                                <h3 class="text-base font-serif font-bold text-slate-900">🔔 Communications & Gateway Triggers</h3>
-                                <p class="text-xs text-slate-400">Automated transaction emails, WhatsApp booking updates, and admin digests.</p>
+                            <div class="border-b border-slate-100 pb-4">
+                                <h3 class="text-base font-bold text-slate-900">Order Alerts & Notifications</h3>
+                                <p class="text-xs text-slate-500">Control automated customer email receipts, dispatch alerts, and admin notifications.</p>
                             </div>
 
                             <div class="space-y-3">
-                                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-                                    <div>
-                                        <p class="text-xs font-bold text-slate-900">Email Transaction Alerts</p>
-                                        <p class="text-[10px] text-slate-400">Send branded HTML receipt emails upon booking creation, rescheduling, and completion</p>
-                                    </div>
+                                <label class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
                                     <input
-                                        v-model="form.settings.email_booking_notifications"
+                                        v-model="form.settings.email_order_notifications"
                                         type="checkbox"
-                                        class="w-5 h-5 text-rose-600 rounded-lg focus:ring-rose-500 cursor-pointer"
+                                        class="rounded text-rose-600 focus:ring-rose-500 h-4 w-4"
                                     />
-                                </div>
+                                    <div>
+                                        <span class="text-xs font-bold text-slate-900 block">Customer Order Confirmation Emails</span>
+                                        <span class="text-[11px] text-slate-500">Send instant HTML receipt upon order placement.</span>
+                                    </div>
+                                </label>
 
-                                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-                                    <div>
-                                        <p class="text-xs font-bold text-slate-900">WhatsApp / SMS Reminders</p>
-                                        <p class="text-[10px] text-slate-400">Dispatch instant WhatsApp reminder notifications to clients 2 hours before scheduled slot</p>
-                                    </div>
+                                <label class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
                                     <input
-                                        v-model="form.settings.sms_whatsapp_notifications"
+                                        v-model="form.settings.admin_new_order_alerts"
                                         type="checkbox"
-                                        class="w-5 h-5 text-rose-600 rounded-lg focus:ring-rose-500 cursor-pointer"
+                                        class="rounded text-rose-600 focus:ring-rose-500 h-4 w-4"
                                     />
-                                </div>
-
-                                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                                     <div>
-                                        <p class="text-xs font-bold text-slate-900">Admin New Salon Onboarding Alerts</p>
-                                        <p class="text-[10px] text-slate-400">Notify administrator immediately when a new salon studio submits verification documents</p>
+                                        <span class="text-xs font-bold text-slate-900 block">Admin Instant Order Alerts</span>
+                                        <span class="text-[11px] text-slate-500">Notify store administrators immediately when a new order is received.</span>
                                     </div>
-                                    <input
-                                        v-model="form.settings.admin_new_salon_alerts"
-                                        type="checkbox"
-                                        class="w-5 h-5 text-rose-600 rounded-lg focus:ring-rose-500 cursor-pointer"
-                                    />
-                                </div>
+                                </label>
                             </div>
                         </div>
 
-                        <!-- ========================================================= -->
-                        <!-- SECTION 5: SOCIAL CHANNELS -->
-                        <!-- ========================================================= -->
-                        <div v-show="activeSection === 'social'" class="space-y-5">
-                            <div>
-                                <h3 class="text-base font-serif font-bold text-slate-900">🌐 Social Media & Community Channels</h3>
-                                <p class="text-xs text-slate-400">Official social links displayed on customer storefront footer and email templates.</p>
+                        <!-- SECTION 4: SOCIAL MEDIA & SEO -->
+                        <div v-show="activeSection === 'social_seo'" class="space-y-5">
+                            <div class="border-b border-slate-100 pb-4">
+                                <h3 class="text-base font-bold text-slate-900">Social Channels & SEO Directives</h3>
+                                <p class="text-xs text-slate-500">Optimize search engine visibility and maintain official brand links.</p>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Instagram Profile URL</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Instagram URL</label>
                                     <input
                                         v-model="form.settings.social_instagram"
                                         type="url"
-                                        placeholder="https://instagram.com/your_handle"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                        placeholder="https://instagram.com/..."
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Facebook Page URL</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Facebook URL</label>
                                     <input
                                         v-model="form.settings.social_facebook"
                                         type="url"
-                                        placeholder="https://facebook.com/your_page"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                        placeholder="https://facebook.com/..."
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">TikTok Profile URL</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">TikTok URL</label>
                                     <input
                                         v-model="form.settings.social_tiktok"
                                         type="url"
-                                        placeholder="https://tiktok.com/@your_handle"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                        placeholder="https://tiktok.com/@..."
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-slate-700">YouTube Channel URL</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">YouTube URL</label>
                                     <input
                                         v-model="form.settings.social_youtube"
                                         type="url"
-                                        placeholder="https://youtube.com/@your_channel"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
+                                        placeholder="https://youtube.com/@..."
+                                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                     />
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- ========================================================= -->
-                        <!-- SECTION 7: SEO & SEARCH INDEXING -->
-                        <!-- ========================================================= -->
-                        <div v-show="activeSection === 'seo'" class="space-y-6">
                             <div>
-                                <h3 class="text-base font-serif font-bold text-slate-900">🔍 SEO & Search Engine Optimization</h3>
-                                <p class="text-xs text-slate-400">Manage Google SERP snippet previews, XML sitemaps, robots.txt, and webmaster verification.</p>
-                            </div>
-
-                            <!-- Live Google SERP Preview Card -->
-                            <div class="p-5 rounded-3xl bg-slate-50 border border-slate-200/80 space-y-2.5">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                                        <span>🌐</span> Live Google Search Snippet Preview
-                                    </span>
-                                    <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                                        SEO Healthy
-                                    </span>
-                                </div>
-                                <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-1">
-                                    <div class="flex items-center gap-2 text-xs text-slate-500">
-                                        <span class="font-medium text-slate-700">beautybook.pk</span>
-                                        <span>›</span>
-                                        <span>salons</span>
-                                    </div>
-                                    <h4 class="text-base font-medium text-[#1a0dab] hover:underline cursor-pointer line-clamp-1">
-                                        {{ form.settings.seo_meta_title || form.settings.site_name || 'BeautyBook Luxe' }}
-                                    </h4>
-                                    <p class="text-xs text-[#4d5156] line-clamp-2 leading-relaxed">
-                                        {{ form.settings.seo_meta_description || 'Discover and book verified luxury salons, certified makeup artists, bridal packages, and professional beauty essentials across Pakistan.' }}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- Meta Title & Meta Description Inputs -->
-                            <div class="space-y-4">
-                                <div>
-                                    <div class="flex justify-between items-center">
-                                        <label class="text-[11px] font-bold text-slate-700">Default Meta Title <span class="text-rose-500">*</span></label>
-                                        <span class="text-[10px]" :class="(form.settings.seo_meta_title?.length || 0) > 60 ? 'text-amber-600 font-bold' : 'text-slate-400'">
-                                            {{ form.settings.seo_meta_title?.length || 0 }} / 60 chars
-                                        </span>
-                                    </div>
-                                    <input
-                                        v-model="form.settings.seo_meta_title"
-                                        type="text"
-                                        placeholder="e.g. BeautyBook Luxe - Premier Salon Marketplace & Beauty CRM"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
-                                    />
-                                </div>
-
-                                <div>
-                                    <div class="flex justify-between items-center">
-                                        <label class="text-[11px] font-bold text-slate-700">Default Meta Description <span class="text-rose-500">*</span></label>
-                                        <span class="text-[10px]" :class="(form.settings.seo_meta_description?.length || 0) > 160 ? 'text-amber-600 font-bold' : 'text-slate-400'">
-                                            {{ form.settings.seo_meta_description?.length || 0 }} / 160 chars
-                                        </span>
-                                    </div>
-                                    <textarea
-                                        v-model="form.settings.seo_meta_description"
-                                        rows="3"
-                                        placeholder="Compelling description summarizing the platform for Google search results..."
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
-                                    ></textarea>
-                                </div>
-
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Target SEO Keywords (Comma Separated)</label>
-                                    <input
-                                        v-model="form.settings.seo_meta_keywords"
-                                        type="text"
-                                        placeholder="salon booking, bridal makeup, beauty parlor karachi, makeup artists..."
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500"
-                                    />
-                                </div>
-                            </div>
-
-                            <!-- Webmaster & Analytics Verification -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Google Search Console Verification Code</label>
-                                    <input
-                                        v-model="form.settings.seo_google_verification"
-                                        type="text"
-                                        placeholder="e.g. google-site-verification=abc123xyz"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500 font-mono text-[11px]"
-                                    />
-                                </div>
-                                <div>
-                                    <label class="text-[11px] font-bold text-slate-700">Google Analytics 4 (GA4 Measurement ID)</label>
-                                    <input
-                                        v-model="form.settings.seo_google_analytics"
-                                        type="text"
-                                        placeholder="e.g. G-XXXXXXXXXX"
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-glam-500 font-mono text-[11px]"
-                                    />
-                                </div>
-                            </div>
-
-                            <!-- Live Crawler Resources Strip -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                                <a
-                                    href="/sitemap.xml"
-                                    target="_blank"
-                                    class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-between transition group"
-                                >
-                                    <div class="space-y-0.5">
-                                        <p class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                                            <span>🗺️</span> XML Sitemap
-                                        </p>
-                                        <p class="text-[10px] text-slate-500">Live dynamic URL index for search bots</p>
-                                    </div>
-                                    <span class="text-xs text-rose-600 font-bold group-hover:translate-x-1 transition-transform">/sitemap.xml ↗</span>
-                                </a>
-                                <a
-                                    href="/robots.txt"
-                                    target="_blank"
-                                    class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-between transition group"
-                                >
-                                    <div class="space-y-0.5">
-                                        <p class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                                            <span>🤖</span> Crawler Directives
-                                        </p>
-                                        <p class="text-[10px] text-slate-500">Search engine indexing rules</p>
-                                    </div>
-                                    <span class="text-xs text-rose-600 font-bold group-hover:translate-x-1 transition-transform">/robots.txt ↗</span>
-                                </a>
-                            </div>
-
-                            <!-- Indexing Toggle -->
-                            <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 flex items-center justify-between">
-                                <div>
-                                    <h4 class="text-xs font-bold text-emerald-950">Allow Search Engine Indexing (Google, Bing)</h4>
-                                    <p class="text-[10px] text-emerald-700">When enabled, robots meta tag is set to index, follow.</p>
-                                </div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Global SEO Meta Title</label>
                                 <input
-                                    v-model="form.settings.seo_index_enabled"
-                                    type="checkbox"
-                                    class="w-5 h-5 text-emerald-600 rounded-lg focus:ring-emerald-500 cursor-pointer"
+                                    v-model="form.settings.seo_meta_title"
+                                    type="text"
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                                />
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Global SEO Meta Description</label>
+                                <textarea
+                                    v-model="form.settings.seo_meta_description"
+                                    rows="2"
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                                ></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">SEO Search Keywords (comma-separated)</label>
+                                <input
+                                    v-model="form.settings.seo_meta_keywords"
+                                    type="text"
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
                                 />
                             </div>
                         </div>
 
-                        <!-- ========================================================= -->
-                        <!-- SECTION 8: SYSTEM & MAINTENANCE -->
-                        <!-- ========================================================= -->
+                        <!-- SECTION 5: SYSTEM & MAINTENANCE -->
                         <div v-show="activeSection === 'system'" class="space-y-5">
-                            <div>
-                                <h3 class="text-base font-serif font-bold text-slate-900">🛡️ System Health & Emergency Controls</h3>
-                                <p class="text-xs text-slate-400">Put the platform into maintenance mode for upgrades or show global announcements.</p>
+                            <div class="border-b border-slate-100 pb-4">
+                                <h3 class="text-base font-bold text-slate-900">System Mode & Maintenance</h3>
+                                <p class="text-xs text-slate-500">Put the public storefront into temporary maintenance mode during stock audits.</p>
                             </div>
 
-                            <div class="p-5 rounded-3xl bg-amber-50/60 border border-amber-200 space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-xs font-bold text-amber-950">Marketplace Maintenance Mode</h4>
-                                        <p class="text-[10px] text-amber-800">Temporarily pause storefront bookings while performing system upgrades</p>
-                                    </div>
-                                    <input
-                                        v-model="form.settings.maintenance_mode"
-                                        type="checkbox"
-                                        class="w-5 h-5 text-amber-600 rounded-lg focus:ring-amber-500 cursor-pointer"
-                                    />
-                                </div>
-
+                            <label class="flex items-center gap-3 p-4 rounded-2xl bg-rose-50/50 border border-rose-200 cursor-pointer">
+                                <input
+                                    v-model="form.settings.maintenance_mode"
+                                    type="checkbox"
+                                    class="rounded text-rose-600 focus:ring-rose-500 h-5 w-5"
+                                />
                                 <div>
-                                    <label class="text-[11px] font-bold text-amber-950">Maintenance Notice Message</label>
-                                    <textarea
-                                        v-model="form.settings.maintenance_message"
-                                        rows="3"
-                                        placeholder="Message displayed to visitors during maintenance..."
-                                        class="w-full mt-1 p-2.5 rounded-2xl border border-amber-200 bg-white text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-amber-500"
-                                    ></textarea>
+                                    <span class="text-xs font-bold text-slate-900 block">Enable Maintenance Mode</span>
+                                    <span class="text-[11px] text-slate-500">Display a polite maintenance screen to public visitors while allowing administrators full access.</span>
                                 </div>
+                            </label>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Maintenance Notice Message</label>
+                                <textarea
+                                    v-model="form.settings.maintenance_message"
+                                    rows="3"
+                                    placeholder="We are upgrading our inventory servers. We will be back online shortly."
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                                ></textarea>
                             </div>
                         </div>
 
-                        <!-- Submit Button in Panel -->
-                        <div class="pt-4 border-t border-rose-50 flex items-center justify-end">
+                        <!-- Submit Button -->
+                        <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
                             <button
                                 type="submit"
                                 :disabled="form.processing"
-                                class="px-8 py-3 rounded-2xl bg-gradient-to-r from-glam-500 via-rose-500 to-pink-600 hover:from-glam-600 hover:to-pink-700 text-white text-xs font-bold shadow-lg shadow-pink-950/20 transition-all active:scale-98 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                                class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 hover:bg-rose-600 px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all hover:scale-102 cursor-pointer disabled:opacity-50"
                             >
-                                <span>💾</span>
-                                <span>{{ form.processing ? 'Saving Platform Changes...' : 'Save Configuration' }}</span>
+                                <span v-if="form.processing" class="animate-spin">⏳</span>
+                                <span v-else>💾</span>
+                                <span>Save All Settings</span>
                             </button>
                         </div>
                     </form>

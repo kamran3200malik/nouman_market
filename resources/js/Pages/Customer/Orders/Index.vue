@@ -134,24 +134,24 @@ const submitCancel = () => {
                     <div class="space-y-2">
                         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-pink-500/20 text-pink-300 border border-pink-500/40 shadow-xs">
                             <span>🛍️</span>
-                            <span>Merchandise & Cosmetics</span>
+                            <span>Authentic Cosmetics & Care</span>
                         </div>
                         <h1 class="text-2xl sm:text-3xl font-bold font-serif tracking-tight text-white flex items-center gap-2">
                             <span>My Product Orders</span>
                             <span class="text-xl">📦</span>
                         </h1>
                         <p class="text-xs sm:text-sm text-pink-200/80 max-w-xl leading-relaxed">
-                            Track real-time shipment status of your cosmetics, salon essentials, and skincare kits delivered to your doorstep.
+                            Track real-time courier shipment status of your cosmetics, serums, fragrances, and skincare kits.
                         </p>
                     </div>
 
                     <div class="flex items-center gap-3 shrink-0">
                         <Link
                             :href="route('products.index')"
-                            class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-glam-600 via-rose-600 to-pink-700 hover:from-glam-700 hover:to-pink-800 text-white text-xs sm:text-sm font-bold shadow-lg shadow-pink-950/40 hover:scale-102 transition-all cursor-pointer"
+                            class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:to-pink-600 text-white text-xs sm:text-sm font-bold shadow-lg shadow-pink-950/40 hover:scale-102 transition-all cursor-pointer"
                         >
                             <span>🛍️</span>
-                            <span>Shop Beauty Store</span>
+                            <span>Shop Beauty Catalog</span>
                         </Link>
                     </div>
                 </div>
@@ -395,7 +395,7 @@ const submitCancel = () => {
                 <div class="space-y-1.5">
                     <h3 class="text-lg font-bold font-serif text-slate-900">No Product Orders Found</h3>
                     <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-                        You haven't placed any merchandise orders yet. Explore our verified salon cosmetics, skincare kits, and haircare essentials.
+                        You haven't placed any merchandise orders yet. Explore our verified luxury cosmetics, clinical skincare kits, and haircare essentials.
                     </p>
                 </div>
                 <Link

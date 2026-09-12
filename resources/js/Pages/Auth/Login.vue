@@ -32,10 +32,7 @@ const submit = () => {
 };
 
 const quickFill = (role) => {
-    if (role === 'artist') {
-        form.login = 'sarah@example.com';
-        form.password = 'password';
-    } else if (role === 'admin') {
+    if (role === 'admin') {
         form.login = 'admin@example.com';
         form.password = 'password';
     } else if (role === 'customer') {
@@ -46,8 +43,8 @@ const quickFill = (role) => {
 </script>
 
 <template>
-    <GuestLayout title="Welcome back" subtitle="Sign in to access your salon dashboard, bookings, and VIP services.">
-        <Head title="Log in" />
+    <GuestLayout title="Welcome back" subtitle="Sign in to track orders, manage your beauty wishlist, and shop authentic products.">
+        <Head title="Sign In - Luxe Beauty Market" />
 
         <div v-if="status" class="mb-6 rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-xs font-semibold text-green-700">
             {{ status }}
@@ -55,7 +52,7 @@ const quickFill = (role) => {
 
         <form @submit.prevent="submit" class="space-y-5">
             <div>
-                <InputLabel for="login" value="Email, phone, or username" class="text-xs font-bold text-slate-700 uppercase tracking-wider" />
+                <InputLabel for="login" value="Email, Phone, or Username" class="text-xs font-bold text-slate-700 uppercase tracking-wider" />
 
                 <TextInput
                     id="login"
@@ -65,7 +62,7 @@ const quickFill = (role) => {
                     required
                     autofocus
                     autocomplete="username"
-                    placeholder="Enter email, phone, or username"
+                    placeholder="Enter email or phone number"
                 />
 
                 <InputError class="mt-1.5 text-xs" :message="form.errors.login" />
@@ -114,64 +111,47 @@ const quickFill = (role) => {
 
             <div class="pt-2">
                 <PrimaryButton
-                    class="w-full rounded-2xl bg-gradient-to-r from-glam-600 via-rose-600 to-pink-700 hover:from-glam-700 hover:to-pink-800 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-pink-950/20 transition hover:scale-101"
+                    class="w-full rounded-2xl bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:to-pink-600 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-pink-950/20 transition hover:scale-101 cursor-pointer"
                     :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
                     :disabled="form.processing"
                 >
-                    {{ form.processing ? 'Signing in...' : 'Sign In' }}
+                    {{ form.processing ? 'Signing in...' : 'Sign In to My Account' }}
                 </PrimaryButton>
             </div>
 
             <!-- Quick Fill Demo Accounts -->
             <div class="pt-4 border-t border-slate-100 space-y-2">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block text-center">
-                    ⚡ 1-Click Quick Fill Credentials (Password: password)
+                    ⚡ 1-Click Demo Login (Password: password)
                 </span>
-                <div class="grid grid-cols-3 gap-2">
-                    <button
-                        type="button"
-                        @click="quickFill('artist')"
-                        class="px-2.5 py-2 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-800 text-[11px] font-bold border border-pink-200 transition cursor-pointer text-center"
-                        title="sarah@example.com / password"
-                    >
-                        🎨 Artist
-                    </button>
-                    <button
-                        type="button"
-                        @click="quickFill('admin')"
-                        class="px-2.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 text-[11px] font-bold border border-purple-200 transition cursor-pointer text-center"
-                        title="admin@example.com / password"
-                    >
-                        👑 Admin
-                    </button>
+                <div class="grid grid-cols-2 gap-2">
                     <button
                         type="button"
                         @click="quickFill('customer')"
                         class="px-2.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold border border-emerald-200 transition cursor-pointer text-center"
                         title="customer@example.com / password"
                     >
-                        🛍️ Customer
+                        🛍️ Customer Buyer
+                    </button>
+                    <button
+                        type="button"
+                        @click="quickFill('admin')"
+                        class="px-2.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 text-[11px] font-bold border border-rose-200 transition cursor-pointer text-center"
+                        title="admin@example.com / password"
+                    >
+                        👑 Store Admin
                     </button>
                 </div>
             </div>
 
-            <div class="text-center pt-2 space-y-1">
+            <div class="text-center pt-2">
                 <p class="text-xs text-slate-600">
                     Don't have an account?
                     <Link
                         :href="route('register')"
                         class="ml-1 font-bold text-rose-600 transition hover:text-rose-700 hover:underline"
                     >
-                        Sign up as Client
-                    </Link>
-                </p>
-                <p class="text-xs text-slate-500">
-                    Are you a salon owner or artist?
-                    <Link
-                        :href="route('artist.register')"
-                        class="ml-1 font-bold text-pink-700 transition hover:underline"
-                    >
-                        Join as Artist &rarr;
+                        Create an account &rarr;
                     </Link>
                 </p>
             </div>

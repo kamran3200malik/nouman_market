@@ -41,7 +41,7 @@ const formatTime = (dateString) => {
                     </Link>
                     <div>
                         <h1 class="text-xl font-bold text-slate-900">
-                            {{ conversation.customer?.name }} &harr; {{ conversation.artist_profile?.business_name || 'Salon' }}
+                            {{ conversation.customer?.name }} &harr; {{ conversation.artist_profile?.business_name || 'Store Merchant' }}
                         </h1>
                         <p class="text-xs text-slate-500">Platform Moderation & Audit Thread</p>
                     </div>
@@ -53,7 +53,7 @@ const formatTime = (dateString) => {
                 <div class="p-4 bg-slate-50 border-b border-slate-200 text-xs flex items-center justify-between">
                     <span>Thread ID: #{{ conversation.id }}</span>
                     <span v-if="conversation.booking" class="font-bold text-glam-800">
-                        Booking #{{ conversation.booking.booking_number }} ({{ conversation.booking.service?.name }})
+                        Order #{{ conversation.booking.booking_number }}
                     </span>
                 </div>
 
@@ -65,7 +65,7 @@ const formatTime = (dateString) => {
                         :class="msg.sender_id === conversation.customer_id ? 'items-start' : 'items-end'"
                     >
                         <div class="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 mb-1">
-                            <span>{{ msg.sender?.name || (msg.sender_id === conversation.customer_id ? 'Customer' : 'Salon') }}</span>
+                            <span>{{ msg.sender?.name || (msg.sender_id === conversation.customer_id ? 'Buyer' : 'Seller') }}</span>
                             <span>•</span>
                             <span>{{ formatTime(msg.created_at) }}</span>
                         </div>

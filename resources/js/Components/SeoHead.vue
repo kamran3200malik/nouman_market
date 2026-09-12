@@ -7,7 +7,7 @@ const seo = page.props.seo || page.props.defaultSeo || {};
 
 <template>
     <Head>
-        <title>{{ seo.title || 'BeautyBook - Beauty Salon Marketplace' }}</title>
+        <title>{{ seo.title || 'Luxe Beauty Market - 100% Genuine Cosmetics & Skincare' }}</title>
         <meta name="description" :content="seo.description" />
         <meta name="keywords" :content="seo.keywords" />
         
@@ -16,8 +16,8 @@ const seo = page.props.seo || page.props.defaultSeo || {};
         <meta property="og:description" :content="seo.description" />
         <meta property="og:type" :content="seo.og_type || 'website'" />
         <meta property="og:url" :content="page.url" />
-        <meta property="og:image" :content="seo.og_image || asset('images/og-default.jpg')" />
-        <meta property="og:site_name" content="BeautyBook" />
+        <meta property="og:image" :content="seo.og_image || '/images/og-default.jpg'" />
+        <meta property="og:site_name" content="Luxe Beauty Market" />
         
         <!-- Twitter Card -->
         <meta name="twitter:card" :content="seo.twitter_card || 'summary_large_image'" />

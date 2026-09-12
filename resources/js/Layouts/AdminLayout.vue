@@ -705,7 +705,7 @@ watch(searchQuery, (newVal) => {
                                 </span>
                                 <input
                                     type="text"
-                                    placeholder="Search artists, bookings, customers..."
+                                    placeholder="Search products, orders, customers..."
                                     class="w-full pl-9 pr-12 py-1.5 text-xs rounded-xl bg-slate-100/70 border border-slate-200 text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all"
                                 />
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none">
@@ -727,8 +727,11 @@ watch(searchQuery, (newVal) => {
                                     </button>
                                 </template>
                                 <template #content>
-                                    <DropdownLink :href="route('admin.artists')">
-                                        Review Pending Artists
+                                    <DropdownLink :href="route('admin.products.index')">
+                                        Manage Products & Inventory
+                                    </DropdownLink>
+                                    <DropdownLink :href="route('admin.products.orders')">
+                                        View Product Orders
                                     </DropdownLink>
                                     <DropdownLink :href="route('admin.notifications.create')">
                                         Send Broadcast Alert

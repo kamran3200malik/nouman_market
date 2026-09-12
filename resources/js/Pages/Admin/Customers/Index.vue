@@ -331,7 +331,7 @@ const formatDate = (date) => {
                                 <td class="py-4 px-4">
                                     <div class="flex items-center gap-2 text-xs">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-rose-50 text-rose-700 font-bold">
-                                            {{ customer.bookings_count || 0 }} Bookings
+                                            {{ customer.product_orders_count || customer.orders_count || 0 }} Orders
                                         </span>
                                         <span class="text-slate-400">•</span>
                                         <span class="text-slate-600 font-medium">
@@ -471,8 +471,8 @@ const formatDate = (date) => {
                     <div v-if="actionType === 'status'">
                         <p class="text-sm text-slate-600">
                             {{ activeCustomer?.is_active
-                                ? 'Deactivating this account will prevent the customer from logging in and scheduling new bookings.'
-                                : 'Activating this account will restore customer access and allow appointments to be booked.' }}
+                                ? 'Deactivating this account will prevent the customer from logging in and placing new product orders.'
+                                : 'Activating this account will restore customer access and allow shopping orders to be placed.' }}
                         </p>
                     </div>
 
